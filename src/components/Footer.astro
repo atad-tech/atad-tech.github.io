@@ -18,12 +18,12 @@ const company = [
     <div class="ftr__brand">
       <img src={href("/logo-dark.png")} alt="عتاد ATAD" width="160" height="35" loading="lazy" />
       <p>{SITE.tagline}. بنشتغل مع عملاء في مصر والسعودية والخليج.</p>
-      <a class="btn btn--wa" href={whatsappLink("أهلًا عتاد، عايز أستفسر عن خدماتكم.")} rel="noopener" data-wa="footer">
+      <a class="btn btn--wa" href={whatsappLink("أهلًا عتاد، عايز أستفسر عن خدماتكم.")} rel="noopener noreferrer" data-wa="footer">
         <Icon name="whatsapp" size={18} /> <span dir="ltr">{CONTACT.phoneDisplay}</span>
       </a>
       <div class="ftr__social">
-        <a href={SOCIAL.facebook} rel="noopener me" target="_blank" aria-label="فيسبوك"><Icon name="facebook" size={20} /></a>
-        <a href={SOCIAL.instagram} rel="noopener me" target="_blank" aria-label="إنستجرام"><Icon name="instagram" size={20} /></a>
+        <a href={SOCIAL.facebook} rel="noopener noreferrer me" target="_blank" aria-label="فيسبوك"><Icon name="facebook" size={20} /></a>
+        <a href={SOCIAL.instagram} rel="noopener noreferrer me" target="_blank" aria-label="إنستجرام"><Icon name="instagram" size={20} /></a>
       </div>
     </div>
 

@@ -1,4 +1,5 @@
 ---
+import "@/styles/fonts";
 import "@/styles/global.css";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
@@ -22,10 +23,16 @@ const canonical = absolute(path);
 const ogImage = absolute("/og-image.png");
 // آخر ثانية في يوم نهاية العرض بتوقيت القاهرة
 const offerEnd = OFFER.percent > 0 ? `${OFFER.endsOn}T23:59:59+02:00` : undefined;
-const trackConfig = JSON.stringify({ adsId: TRACKING.googleAdsId, adsLabel: TRACKING.googleAdsLabel });
 ---
 <!doctype html>
-<html lang={SITE.lang} dir="rtl" data-offer-end={offerEnd}>
+<html
+  lang={SITE.lang}
+  dir="rtl"
+  data-offer-end={offerEnd}
+  data-ads-id={TRACKING.googleAdsId || undefined}
+  data-ads-label={TRACKING.googleAdsLabel || undefined}
+  data-pixel-id={TRACKING.metaPixelId || undefined}
+>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -34,6 +41,9 @@ const trackConfig = JSON.stringify({ adsId: TRACKING.googleAdsId, adsLabel: TRAC
     <link rel="canonical" href={canonical} />
     <meta name="robots" content={noindex ? "noindex, follow" : "index, follow, max-image-preview:large"} />
     <meta name="theme-color" content="#0A1B33" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="manifest" href={href("/manifest.webmanifest")} />
     <link rel="icon" href={href("/mark.png")} type="image/png" />
     <link rel="apple-touch-icon" href={href("/mark.png")} />
     <link rel="sitemap" href={href("/sitemap.xml")} />
@@ -54,26 +64,10 @@ const trackConfig = JSON.stringify({ adsId: TRACKING.googleAdsId, adsLabel: TRAC
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Readex+Pro:wght@500;600;700&display=swap" />
 
     <JsonLd data={[organization(), website(), ...schema]} />
 
     {TRACKING.ahrefsKey && <script is:inline async src="https://analytics.ahrefs.com/analytics.js" data-key={TRACKING.ahrefsKey}></script>}
-    <script is:inline define:vars={{ trackConfig }}>window.__atadTrack = JSON.parse(trackConfig);</script>
-    {TRACKING.googleAdsId && (
-      <>
-        <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${TRACKING.googleAdsId}`}></script>
-        <script is:inline define:vars={{ id: TRACKING.googleAdsId }}>window.dataLayer = window.dataLayer || []; window.gtag = function () { dataLayer.push(arguments); }; gtag("js", new Date()); gtag("config", id);</script>
-      </>
-    )}
-    {TRACKING.metaPixelId && (
-      <script is:inline define:vars={{ id: TRACKING.metaPixelId }}>
-        !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version="2.0";n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,"script","https://connect.facebook.net/en_US/fbevents.js");
-        fbq("init", id); fbq("track", "PageView");
-      </script>
-    )}
   </head>
   <body>
     <a class="skip" href="#main">تخطّي للمحتوى</a>
@@ -82,12 +76,14 @@ const trackConfig = JSON.stringify({ adsId: TRACKING.googleAdsId, adsLabel: TRAC
       <slot />
     </main>
     <Footer />
-    <a class="wa-float" href={whatsappLink("أهلًا عتاد، عايز أستفسر عن خدماتكم.")} rel="noopener" aria-label="كلمنا واتساب" data-wa="float">
+    <a class="wa-float" href={whatsappLink("أهلًا عتاد، عايز أستفسر عن خدماتكم.")} rel="noopener noreferrer" aria-label="كلمنا واتساب" data-wa="float">
       <Icon name="whatsapp" size={26} />
     </a>
     <script>
+      import "@/scripts/guard";
       import "@/scripts/offer";
       import "@/scripts/lead";
+      import "@/scripts/tracking";
     </script>
     <style>
       .wa-float { position: fixed; bottom: 18px; left: 18px; z-index: 40; width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; background: var(--wa); color: #fff; box-shadow: 0 10px 28px rgba(0,0,0,.28); transition: transform .15s; }

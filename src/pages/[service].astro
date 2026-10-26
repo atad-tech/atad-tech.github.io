@@ -36,7 +36,7 @@ const steps = [
   <PageHero title={s.h1} lead={s.intro} crumbs={crumbs} eyebrow={CATEGORIES[s.category].name}>
     <div class="btn-row">
       <a class="btn btn--primary btn--lg" href={href("/#calc")}>{s.priceFrom ? "احسب التكلفة" : "اطلب عرض سعر"}</a>
-      <a class="btn btn--wa btn--lg" href={whatsappLink(waText)} rel="noopener" data-wa={s.slug}><Icon name="whatsapp" size={20} />كلمنا عن {s.name}</a>
+      <a class="btn btn--wa btn--lg" href={whatsappLink(waText)} rel="noopener noreferrer" data-wa={s.slug}><Icon name="whatsapp" size={20} />كلمنا عن {s.name}</a>
     </div>
     {OFFER.percent > 0 && <p class="offer-note" data-offer hidden>خصم {OFFER.percent}% {OFFER.label}</p>}
   </PageHero>
@@ -76,7 +76,7 @@ const steps = [
           <>
             <p class="price__val"><b>حسب احتياجك</b></p>
             <p class="price__note">ابعتلنا تفاصيل شغلك ونرجعلك بعرض سعر واضح ومكتوب خلال يوم عمل.</p>
-            <a class="btn btn--wa" href={whatsappLink(waText)} rel="noopener" data-wa={`${s.slug}-price`}><Icon name="whatsapp" size={18} />اطلب عرض سعر</a>
+            <a class="btn btn--wa" href={whatsappLink(waText)} rel="noopener noreferrer" data-wa={`${s.slug}-price`}><Icon name="whatsapp" size={18} />اطلب عرض سعر</a>
           </>
         )}
       </aside>

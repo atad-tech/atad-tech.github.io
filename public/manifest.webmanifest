@@ -1,0 +1,12 @@
+{
+  "name": "عتاد ATAD للبرمجيات",
+  "short_name": "عتاد",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "/?src=pwa",
+  "scope": "/",
+  "display": "browser",
+  "background_color": "#0A1B33",
+  "theme_color": "#0A1B33",
+  "icons": [{ "src": "/mark.png", "sizes": "128x128", "type": "image/png" }]
+}

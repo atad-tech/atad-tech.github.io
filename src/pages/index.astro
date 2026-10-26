@@ -42,7 +42,7 @@ const faq = [
         <p class="lead">{SITE.tagline}. اعرف تكلفة مشروعك في 30 ثانية، وابعتها لنا على واتساب ونرد عليك بتصور كامل.</p>
         <div class="btn-row">
           <a class="btn btn--primary btn--lg" href={href("/services/")}>شوف خدماتنا</a>
-          <a class="btn btn--ghost btn--lg" href={whatsappLink("أهلًا عتاد، عايز أستفسر عن مشروع.")} rel="noopener" data-wa="hero"><Icon name="whatsapp" size={20} />كلمنا واتساب</a>
+          <a class="btn btn--ghost btn--lg" href={whatsappLink("أهلًا عتاد، عايز أستفسر عن مشروع.")} rel="noopener noreferrer" data-wa="hero"><Icon name="whatsapp" size={20} />كلمنا واتساب</a>
         </div>
         <ul class="proof">
           <li><b>30 ثانية</b><span>وتعرف السعر التقريبي</span></li>
@@ -64,7 +64,7 @@ const faq = [
         <Countdown />
         <div class="btn-row">
           <a class="btn btn--primary" href="#calc">احسب سعرك بعد الخصم</a>
-          <a class="btn btn--wa" href={whatsappLink(`أهلًا عتاد، عايز أحجز خصم ${OFFER.percent}% على أول مشروع وأعرف عرض السعر.`)} rel="noopener" data-wa="offer">احجز الخصم على واتساب</a>
+          <a class="btn btn--wa" href={whatsappLink(`أهلًا عتاد، عايز أحجز خصم ${OFFER.percent}% على أول مشروع وأعرف عرض السعر.`)} rel="noopener noreferrer" data-wa="offer">احجز الخصم على واتساب</a>
         </div>
       </div>
     </section>

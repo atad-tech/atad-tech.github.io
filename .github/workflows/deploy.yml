@@ -1,44 +1,72 @@
-name: Build & deploy site
+name: Test & deploy
 
+# كل push بيتبني ويتختبر بالكامل. النشر بيحصل بس لو كل الاختبارات نجحت.
 on:
   push:
     branches: [main]
   pull_request:
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+# مفيش أي صلاحيات افتراضية. كل job بياخد اللي محتاجه بس.
+permissions: {}
 
 concurrency:
-  group: pages
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  NODE_VERSION: "22.23.4"
+
 jobs:
-  build:
+  test:
+    name: Build & test
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          node-version: 22
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
-      - run: npm ci
-      # astro check (TypeScript) + build — أي خطأ بيوقف النشر
-      - run: npm run build
-      - uses: actions/upload-pages-artifact@v3
-        if: github.event_name != 'pull_request'
+      # --ignore-scripts: ما نشغّلش أي كود تثبيت من الباكدجات (حماية من هجمات سلسلة التوريد)
+      - run: npm ci --ignore-scripts
+      - name: Audit dependencies
+        run: npm audit --audit-level=low
+      - name: Type-check & build
+        run: npm run build
+      - name: Unit tests
+        run: npm run test:unit
+      - name: Install browser
+        run: npx playwright install --with-deps chromium
+      - name: End-to-end tests (desktop + mobile)
+        run: npm run test:e2e
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: failure()
+        with:
+          name: playwright-traces
+          path: test-results/
+          retention-days: 7
+      - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         with:
           path: dist
 
   deploy:
-    if: github.event_name != 'pull_request'
-    needs: build
+    name: Deploy to GitHub Pages
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    needs: test
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4

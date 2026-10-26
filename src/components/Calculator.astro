@@ -61,7 +61,7 @@ const marketKeys = Object.keys(MARKETS) as (keyof typeof MARKETS)[];
 
 <script>
   import { offerActive } from "@/scripts/offer";
-  import { trackLead, withSource } from "@/scripts/lead";
+  import { openWhatsApp, trackLead, withSource } from "@/scripts/lead";
 
   type Range = [number, number];
   interface Cfg {
@@ -124,7 +124,7 @@ const marketKeys = Object.keys(MARKETS) as (keyof typeof MARKETS)[];
     form.addEventListener("submit", (e) => {
       e.preventDefault();
       trackLead("calculator");
-      window.open(`https://wa.me/${cfg.whatsapp}?text=${encodeURIComponent(message())}`, "_blank", "noopener");
+      openWhatsApp(cfg.whatsapp, message());
     });
     document.addEventListener("atad:offer-ended", render);
     render();

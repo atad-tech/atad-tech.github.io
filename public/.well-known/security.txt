@@ -1,0 +1,8 @@
+# لو لقيت ثغرة أمنية في موقع عتاد، بلّغنا من فضلك قبل ما تنشرها.
+# If you found a security issue on this site, please report it privately.
+Contact: mailto:xmostafazmohamed@gmail.com
+Contact: https://wa.me/201104549752
+Expires: 2027-10-26T00:00:00.000Z
+Preferred-Languages: ar, en
+Canonical: https://atad-tech.github.io/.well-known/security.txt
+Policy: https://github.com/atad-tech/atad-tech.github.io/security/policy
