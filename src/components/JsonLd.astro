@@ -1,0 +1,8 @@
+---
+interface Props { data: Record<string, unknown> | Record<string, unknown>[] }
+const { data } = Astro.props;
+const graph = Array.isArray(data) ? data : [data];
+// "<" بيتهرّب عشان أي نص ما يقفلش وسم الـ script بالغلط
+const json = JSON.stringify({ "@context": "https://schema.org", "@graph": graph }).replace(/</g, "\\u003c");
+---
+<script type="application/ld+json" set:html={json} />

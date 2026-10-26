@@ -1,0 +1,23 @@
+{
+  "name": "atad-website",
+  "private": true,
+  "type": "module",
+  "version": "2.0.0",
+  "description": "عتاد ATAD — موقع الشركة الرسمي",
+  "scripts": {
+    "dev": "astro dev",
+    "check": "astro check",
+    "build": "astro check && astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "astro": "5.18.2"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.12",
+    "typescript": "5.9.3"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

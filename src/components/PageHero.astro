@@ -1,0 +1,39 @@
+---
+import { href } from "@/lib/url";
+
+interface Props {
+  title: string;
+  lead?: string;
+  crumbs?: { name: string; path: string }[];
+  eyebrow?: string;
+}
+const { title, lead, crumbs = [], eyebrow } = Astro.props;
+---
+<section class="hero dark">
+  <div class="container hero__in">
+    {crumbs.length > 0 && (
+      <nav aria-label="مسار التصفح" class="crumbs">
+        <ol>
+          {crumbs.map((c, i) => (
+            <li>{i < crumbs.length - 1 ? <a href={href(c.path)}>{c.name}</a> : <span aria-current="page">{c.name}</span>}</li>
+          ))}
+        </ol>
+      </nav>
+    )}
+    {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+    <h1>{title}</h1>
+    {lead && <p class="lead">{lead}</p>}
+    <slot />
+  </div>
+</section>
+
+<style>
+  .hero { position: relative; overflow: hidden; padding-block: clamp(40px, 6vw, 72px) clamp(48px, 7vw, 84px); }
+  .hero::before { content: ""; position: absolute; width: 720px; height: 720px; border-radius: 50%; background: radial-gradient(circle, rgba(18,194,233,.18), transparent 65%); inset-inline-end: -260px; top: -320px; pointer-events: none; }
+  .hero__in { position: relative; max-width: var(--container); }
+  .hero h1 { max-width: 20ch; }
+  .lead { font-size: clamp(17px, 1.6vw, 19.5px); max-width: 62ch; margin-bottom: 26px; }
+  .crumbs ol { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; padding: 0; margin: 0 0 18px; font-size: 14px; color: #9fb0c7; }
+  .crumbs li + li::before { content: "‹"; margin-inline-end: 6px; color: #64768f; }
+  .crumbs a { color: #c9d5e4; }
+</style>

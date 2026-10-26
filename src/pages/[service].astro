@@ -1,0 +1,129 @@
+---
+import type { GetStaticPaths } from "astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageHero from "@/components/PageHero.astro";
+import ServiceCard from "@/components/ServiceCard.astro";
+import Faq from "@/components/Faq.astro";
+import CtaBand from "@/components/CtaBand.astro";
+import Icon from "@/components/Icon.astro";
+import { CATEGORIES, SERVICES, serviceBySlug, type Service } from "@/data/services";
+import { OFFER, whatsappLink } from "@/config/site";
+import { fmt } from "@/config/pricing";
+import { href, servicePath } from "@/lib/url";
+import { breadcrumbs, faqPage, serviceSchema } from "@/lib/schema";
+
+export const getStaticPaths = (() =>
+  SERVICES.map((service) => ({ params: { service: service.slug }, props: { service } }))) satisfies GetStaticPaths;
+
+interface Props { service: Service }
+const { service: s } = Astro.props;
+const path = servicePath(s.slug);
+const crumbs = [
+  { name: "عتاد", path: "/" },
+  { name: "خدماتنا", path: "/services/" },
+  { name: s.name, path },
+];
+const related = s.related.map(serviceBySlug);
+const waText = `أهلًا عتاد، عايز أعرف تفاصيل وسعر خدمة ${s.name}.`;
+const steps = [
+  { t: "نفهم شغلك", d: "مكالمة قصيرة نعرف فيها هدفك وعملاءك، من غير أي التزام." },
+  { t: "تصور وسعر", d: "بنبعتلك خطة واضحة وسعر نهائي ومدة مكتوبين." },
+  { t: "تنفيذ على مراحل", d: "بتشوف الشغل أول بأول، وتدفع مع كل تسليم." },
+  { t: "إطلاق ومتابعة", d: "بنسلّم ونفضل معاك في الدعم والتطوير." },
+];
+---
+<BaseLayout title={s.seo.title} description={s.seo.description} path={path} schema={[serviceSchema(s), breadcrumbs(crumbs), faqPage(s.faq)]}>
+  <PageHero title={s.h1} lead={s.intro} crumbs={crumbs} eyebrow={CATEGORIES[s.category].name}>
+    <div class="btn-row">
+      <a class="btn btn--primary btn--lg" href={href("/#calc")}>{s.priceFrom ? "احسب التكلفة" : "اطلب عرض سعر"}</a>
+      <a class="btn btn--wa btn--lg" href={whatsappLink(waText)} rel="noopener" data-wa={s.slug}><Icon name="whatsapp" size={20} />كلمنا عن {s.name}</a>
+    </div>
+    {OFFER.percent > 0 && <p class="offer-note" data-offer hidden>خصم {OFFER.percent}% {OFFER.label}</p>}
+  </PageHero>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">ليه عتاد</p>
+        <h2>ليه تختار عتاد في {s.name}؟</h2>
+      </div>
+      <div class="grid grid-2">
+        {s.highlights.map((h, i) => (
+          <div class="card hl"><span class="hl__n">{String(i + 1).padStart(2, "0")}</span><h3>{h.title}</h3><p>{h.text}</p></div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="container split">
+      <div>
+        <p class="eyebrow">الخدمة بتشمل</p>
+        <h2>كل اللي هتستلمه</h2>
+        <ul class="checks incl">{s.includes.map((x) => <li><Icon name="check" size={18} />{x}</li>)}</ul>
+      </div>
+      <aside class="card price">
+        <p class="price__label">التكلفة</p>
+        {s.priceFrom ? (
+          <>
+            <p class="price__val">يبدأ من <b>{fmt(s.priceFrom)}</b> جنيه</p>
+            {s.priceNote && <p class="price__note">{s.priceNote}</p>}
+            <p class="price__note">أسعار السعودية والخليج بالريال والدولار في الحاسبة.</p>
+            <a class="btn btn--primary" href={href("/#calc")}>احسب السعر بالظبط</a>
+            <a class="link" href={href("/website-cost/")}>تفاصيل الأسعار والمميزات</a>
+          </>
+        ) : (
+          <>
+            <p class="price__val"><b>حسب احتياجك</b></p>
+            <p class="price__note">ابعتلنا تفاصيل شغلك ونرجعلك بعرض سعر واضح ومكتوب خلال يوم عمل.</p>
+            <a class="btn btn--wa" href={whatsappLink(waText)} rel="noopener" data-wa={`${s.slug}-price`}><Icon name="whatsapp" size={18} />اطلب عرض سعر</a>
+          </>
+        )}
+      </aside>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head"><p class="eyebrow">طريقة الشغل</p><h2>من أول رسالة لحد التسليم</h2></div>
+      <ol class="steps">
+        {steps.map((st) => <li><b>{st.t}</b><span>{st.d}</span></li>)}
+      </ol>
+    </div>
+  </section>
+
+  <Faq items={s.faq} title={`أسئلة شائعة عن ${s.name}`} />
+
+  {related.length > 0 && (
+    <section class="section section--alt">
+      <div class="container">
+        <div class="section-head"><h2>خدمات بتكمّل بعض</h2></div>
+        <div class="grid grid-3">{related.map((r) => <ServiceCard service={r} />)}</div>
+      </div>
+    </section>
+  )}
+
+  <CtaBand waText={waText} />
+</BaseLayout>
+
+<style>
+  .offer-note { margin: 16px 0 0; color: var(--cyan); font-weight: 600; }
+  .hl { position: relative; }
+  .hl__n { font: 700 14px var(--font-display); color: var(--cyan); display: block; margin-bottom: 8px; }
+  .split { display: grid; grid-template-columns: 1.4fr 1fr; gap: 40px; align-items: start; }
+  .incl { grid-template-columns: 1fr 1fr; column-gap: 24px; }
+  .price { display: grid; gap: 10px; border-top: 4px solid var(--cyan); }
+  .price p { margin: 0; }
+  .price__label { color: var(--muted) !important; font-size: 14px !important; }
+  .price__val { font-size: 18px; color: var(--ink) !important; }
+  .price__val b { font: 700 30px var(--font-display); color: var(--ink); }
+  .price__note { font-size: 14.5px !important; }
+  .link { text-align: center; font-size: 14.5px; color: var(--muted); }
+  .steps { list-style: none; counter-reset: s; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .steps li { counter-increment: s; border-top: 2px solid var(--line); padding-top: 14px; }
+  .steps li::before { content: counter(s); font: 700 22px var(--font-display); color: var(--cyan); display: block; }
+  .steps b { display: block; margin: 4px 0; font-size: 17px; }
+  .steps span { color: var(--muted); font-size: 15px; }
+  @media (max-width: 860px) { .split { grid-template-columns: 1fr; } .steps { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 520px) { .incl, .steps { grid-template-columns: 1fr; } }
+</style>

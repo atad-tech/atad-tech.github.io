@@ -1,0 +1,97 @@
+---
+import "@/styles/global.css";
+import Header from "@/components/Header.astro";
+import Footer from "@/components/Footer.astro";
+import Icon from "@/components/Icon.astro";
+import JsonLd from "@/components/JsonLd.astro";
+import { OFFER, SITE, TRACKING, whatsappLink } from "@/config/site";
+import { absolute, href } from "@/lib/url";
+import { organization, website } from "@/lib/schema";
+
+interface Props {
+  title: string;
+  description: string;
+  /** مسار الصفحة، بيتستخدم في canonical */
+  path: string;
+  ogType?: "website" | "article";
+  schema?: Record<string, unknown>[];
+  noindex?: boolean;
+}
+const { title, description, path, ogType = "website", schema = [], noindex = false } = Astro.props;
+const canonical = absolute(path);
+const ogImage = absolute("/og-image.png");
+// آخر ثانية في يوم نهاية العرض بتوقيت القاهرة
+const offerEnd = OFFER.percent > 0 ? `${OFFER.endsOn}T23:59:59+02:00` : undefined;
+const trackConfig = JSON.stringify({ adsId: TRACKING.googleAdsId, adsLabel: TRACKING.googleAdsLabel });
+---
+<!doctype html>
+<html lang={SITE.lang} dir="rtl" data-offer-end={offerEnd}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="robots" content={noindex ? "noindex, follow" : "index, follow, max-image-preview:large"} />
+    <meta name="theme-color" content="#0A1B33" />
+    <link rel="icon" href={href("/mark.png")} type="image/png" />
+    <link rel="apple-touch-icon" href={href("/mark.png")} />
+    <link rel="sitemap" href={href("/sitemap.xml")} />
+    {TRACKING.ahrefsVerification && <meta name="ahrefs-site-verification" content={TRACKING.ahrefsVerification} />}
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:locale" content={SITE.locale} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="عتاد ATAD Software Engineering" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Readex+Pro:wght@500;600;700&display=swap" />
+
+    <JsonLd data={[organization(), website(), ...schema]} />
+
+    {TRACKING.ahrefsKey && <script is:inline async src="https://analytics.ahrefs.com/analytics.js" data-key={TRACKING.ahrefsKey}></script>}
+    <script is:inline define:vars={{ trackConfig }}>window.__atadTrack = JSON.parse(trackConfig);</script>
+    {TRACKING.googleAdsId && (
+      <>
+        <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${TRACKING.googleAdsId}`}></script>
+        <script is:inline define:vars={{ id: TRACKING.googleAdsId }}>window.dataLayer = window.dataLayer || []; window.gtag = function () { dataLayer.push(arguments); }; gtag("js", new Date()); gtag("config", id);</script>
+      </>
+    )}
+    {TRACKING.metaPixelId && (
+      <script is:inline define:vars={{ id: TRACKING.metaPixelId }}>
+        !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version="2.0";n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,"script","https://connect.facebook.net/en_US/fbevents.js");
+        fbq("init", id); fbq("track", "PageView");
+      </script>
+    )}
+  </head>
+  <body>
+    <a class="skip" href="#main">تخطّي للمحتوى</a>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+    <a class="wa-float" href={whatsappLink("أهلًا عتاد، عايز أستفسر عن خدماتكم.")} rel="noopener" aria-label="كلمنا واتساب" data-wa="float">
+      <Icon name="whatsapp" size={26} />
+    </a>
+    <script>
+      import "@/scripts/offer";
+      import "@/scripts/lead";
+    </script>
+    <style>
+      .wa-float { position: fixed; bottom: 18px; left: 18px; z-index: 40; width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; background: var(--wa); color: #fff; box-shadow: 0 10px 28px rgba(0,0,0,.28); transition: transform .15s; }
+      .wa-float:hover { transform: scale(1.06); }
+    </style>
+  </body>
+</html>

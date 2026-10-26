@@ -1,0 +1,18 @@
+---
+import Icon from "./Icon.astro";
+interface Props { items: readonly { q: string; a: string }[]; title?: string }
+const { items, title = "أسئلة شائعة" } = Astro.props;
+---
+<section class="section" id="faq">
+  <div class="container">
+    <div class="section-head"><h2>{title}</h2></div>
+    <div class="faq">
+      {items.map(({ q, a }) => (
+        <details>
+          <summary>{q}<Icon name="chevron" size={20} /></summary>
+          <p>{a}</p>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>

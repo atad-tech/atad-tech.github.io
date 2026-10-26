@@ -1,0 +1,45 @@
+---
+import Icon from "./Icon.astro";
+import { OFFER, whatsappLink } from "@/config/site";
+import { href } from "@/lib/url";
+
+interface Props { title?: string; text?: string; waText?: string }
+const {
+  title = "جاهز تبدأ مشروعك؟",
+  text = "ابعتلنا فكرتك النهارده، ونرجعلك بتصور وسعر واضح. كل اللي محتاجه رسالة واحدة.",
+  waText = "أهلًا عتاد، عايز عرض سعر لمشروعي.",
+} = Astro.props;
+const points = [
+  "استشارة وتصور مبدئي مجانًا، من غير أي التزام",
+  "سعر نهائي ثابت ومكتوب قبل ما نبدأ",
+  "دفع على مراحل، كل مرحلة بعد ما تشوف الشغل",
+  "دعم وتطوير بعد الإطلاق",
+];
+---
+<section class="section--tight">
+  <div class="container">
+    <div class="cta dark">
+      <div>
+        <h2>{title}</h2>
+        <p class="muted">{text}</p>
+        <ul class="checks">{points.map((p) => <li><Icon name="check" size={18} />{p}</li>)}</ul>
+      </div>
+      <div class="cta__side">
+        {OFFER.percent > 0 && <p class="cta__offer" data-offer hidden>خصم {OFFER.percent}% {OFFER.label}</p>}
+        <a class="btn btn--primary btn--lg" href={href("/#calc")}>احسب التكلفة واطلب عرض سعر</a>
+        <a class="btn btn--wa btn--lg" href={whatsappLink(waText)} rel="noopener" data-wa="cta"><Icon name="whatsapp" size={20} />كلمنا على واتساب دلوقتي</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta { border-radius: var(--radius-l); padding: clamp(24px, 4vw, 40px); display: grid; grid-template-columns: 1.3fr 1fr; gap: 28px; align-items: center; position: relative; overflow: hidden; }
+  .cta::after { content: ""; position: absolute; inset-inline-start: -80px; bottom: -120px; width: 320px; height: 320px; background: conic-gradient(from 210deg, transparent 0 60%, rgba(18,194,233,.18) 60% 75%, transparent 75%); clip-path: polygon(50% 0, 100% 100%, 0 100%); pointer-events: none; }
+  .cta h2 { color: #fff; }
+  .checks li { color: #e6eef7; }
+  .cta__side { display: grid; gap: 10px; position: relative; z-index: 1; }
+  .cta__side .btn { white-space: normal; text-align: center; }
+  .cta__offer { margin: 0 0 4px; text-align: center; color: var(--cyan); font: 600 16px var(--font-display); }
+  @media (max-width: 860px) { .cta { grid-template-columns: 1fr; } }
+</style>

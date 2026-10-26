@@ -1,0 +1,40 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageHero from "@/components/PageHero.astro";
+import ServiceCard from "@/components/ServiceCard.astro";
+import CtaBand from "@/components/CtaBand.astro";
+import { CATEGORIES, SERVICES, servicesIn, type CategoryId } from "@/data/services";
+import { absolute, servicePath } from "@/lib/url";
+import { breadcrumbs } from "@/lib/schema";
+
+const cats = Object.keys(CATEGORIES) as CategoryId[];
+const crumbs = [{ name: "عتاد", path: "/" }, { name: "خدماتنا", path: "/services/" }];
+const list = {
+  "@type": "ItemList",
+  name: "خدمات عتاد",
+  itemListElement: SERVICES.map((s, i) => ({ "@type": "ListItem", position: i + 1, name: s.name, url: absolute(servicePath(s.slug)) })),
+};
+---
+<BaseLayout
+  title="خدمات عتاد | برمجة وتسويق رقمي وتصميم واستضافة"
+  description="كل خدمات عتاد في مكان واحد: برمجة تطبيقات ومواقع ومتاجر وأنظمة، إدارة سوشيال ميديا وإعلانات وSEO، تصميم هوية ومطبوعات، واستضافة ودومينات وإيميل شركات."
+  path="/services/"
+  schema={[breadcrumbs(crumbs), list]}
+>
+  <PageHero
+    title="كل اللي شغلك محتاجه عشان يكبر أونلاين"
+    lead="من أول اللوجو والدومين، لحد التطبيق والإعلانات اللي بتجيبلك عملاء. فريق واحد فاهم براندك من الأول للآخر."
+    crumbs={crumbs}
+  />
+
+  {cats.map((c, i) => (
+    <section class:list={["section", { "section--alt": i % 2 === 1 }]} id={c}>
+      <div class="container">
+        <div class="section-head"><h2>{CATEGORIES[c].name}</h2><p>{CATEGORIES[c].blurb}</p></div>
+        <div class="grid grid-4">{servicesIn(c).map((s) => <ServiceCard service={s} />)}</div>
+      </div>
+    </section>
+  ))}
+
+  <CtaBand title="مش عارف تبدأ بإيه؟" text="احكيلنا عن شغلك وهدفك، ونقترحلك الخدمات اللي هتفرق معاك فعلاً، من غير ما نبيعلك حاجة مش محتاجها." />
+</BaseLayout>

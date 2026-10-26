@@ -1,0 +1,105 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageHero from "@/components/PageHero.astro";
+import Faq from "@/components/Faq.astro";
+import CtaBand from "@/components/CtaBand.astro";
+import { ADDONS, PROJECT_TYPES, fmt, fmtRange } from "@/config/pricing";
+import { href } from "@/lib/url";
+import { breadcrumbs, faqPage } from "@/lib/schema";
+
+const P = PROJECT_TYPES;
+const crumbs = [{ name: "عتاد", path: "/" }, { name: "أسعار تصميم المواقع والتطبيقات", path: "/website-cost/" }];
+const typeLinks = { app: "/mobile-apps/", site: "/web-design/", store: "/ecommerce/", system: "/systems/" } as const;
+const order = ["site", "store", "system", "app"] as const;
+const addons = Object.values(ADDONS).sort((a, b) => b.price[1] - a.price[1]);
+const faq = [
+  { q: "كام أقل سعر لتصميم موقع إلكتروني في مصر؟", a: `عند عتاد الموقع التعريفي البسيط بيبدأ من حوالي ${fmt(P.site.price[0])} جنيه ويوصل لحوالي ${fmt(P.site.price[1])} جنيه حسب عدد الصفحات والتصميم، من غير المميزات الإضافية.` },
+  { q: "ليه أسعار تصميم المواقع مختلفة جدًا من شركة للتانية؟", a: "لأن كلمة موقع بتشمل حاجات مختلفة: قالب جاهز بيتعدل، أو تصميم مخصص، أو برمجة كاملة بلوحة تحكم ودفع أونلاين. كمان بيفرق الدعم بعد الإطلاق والتجهيز لمحركات البحث." },
+  { q: "هل فيه مصاريف سنوية بعد تصميم الموقع؟", a: "أيوه، الدومين والاستضافة بيتجددوا كل سنة، والسعر بيختلف حسب نوع الدومين وحجم الاستضافة. بنوضحلك المصاريف دي في عرض السعر قبل ما تبدأ." },
+  { q: "الدفع بيبقى إزاي؟", a: "على مراحل، وكل مرحلة مربوطة بتسليم واضح، فإنت بتدفع على شغل شفته." },
+  { q: "الأسعار دي للسعودية والخليج برضه؟", a: "لأ، أسعار السعودية بالريال وباقي الخليج بالدولار ومختلفة عن أسعار مصر. اختار بلدك في الحاسبة وهيظهرلك السعر بالعملة المناسبة." },
+];
+---
+<BaseLayout
+  title="تكلفة تصميم موقع إلكتروني في مصر 2026 | أسعار المواقع والمتاجر والتطبيقات – عتاد"
+  description={`كام تكلفة تصميم موقع في مصر 2026؟ المواقع التعريفية من ${fmt(P.site.price[0])} جنيه، المتاجر من ${fmt(P.store.price[0])}، التطبيقات من ${fmt(P.app.price[0])}، مع المدة وإيه اللي بيغيّر السعر. احسب تكلفة مشروعك في 30 ثانية.`}
+  path="/website-cost/"
+  ogType="article"
+  schema={[breadcrumbs(crumbs), faqPage(faq)]}
+>
+  <PageHero
+    title="تكلفة تصميم موقع إلكتروني في مصر 2026"
+    lead="أسعار حقيقية للمواقع والمتاجر والتطبيقات وأنظمة الإدارة، والمدة اللي بياخدها كل نوع، وإيه بالظبط اللي بيرفع السعر أو ينزّله."
+    crumbs={crumbs}
+  >
+    <p class="meta">آخر تحديث: أكتوبر 2026 · الأسعار بالجنيه المصري</p>
+  </PageHero>
+
+  <section class="section--tight">
+    <div class="container">
+      <div class="answer card">
+        <p><strong>الإجابة المختصرة:</strong> الموقع التعريفي من <strong>{fmtRange(P.site.price)} جنيه</strong>، والمتجر الإلكتروني من <strong>{fmtRange(P.store.price)} جنيه</strong>، ونظام الإدارة من <strong>{fmtRange(P.system.price)} جنيه</strong>، وتطبيق الموبايل من <strong>{fmtRange(P.app.price)} جنيه</strong>. ده السعر الأساسي بتصميم بسيط، والمميزات الإضافية والتصميم الخاص بيزوّدوه.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head"><h2>الأسعار حسب نوع المشروع</h2><p>دي الأسعار اللي بتشتغل بيها حاسبة عتاد، لمشروع بتصميم بسيط ومن غير مميزات إضافية.</p></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>نوع المشروع</th><th>السعر (جنيه)</th><th>مدة التنفيذ</th><th>مناسب لمين</th></tr></thead>
+          <tbody>
+            {order.map((k) => (
+              <tr><td><a href={href(typeLinks[k])}>{P[k].name}</a></td><td class="num">{fmtRange(P[k].price)}</td><td class="num">{P[k].weeks[0]} – {P[k].weeks[1]} أسابيع</td><td>{P[k].hint}</td></tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="container">
+      <div class="section-head"><h2>المميزات الإضافية وتكلفتها</h2><p>كل ميزة بتضيفها ليها تكلفة وبتزوّد المدة شوية، حوالي أسبوع لكل ميزتين.</p></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>الميزة</th><th>تضيف (جنيه)</th><th>فايدتها</th></tr></thead>
+          <tbody>{addons.map((a) => <tr><td>{a.name}</td><td class="num">{fmtRange(a.price)}</td><td>{a.benefit}</td></tr>)}</tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container prose">
+      <h2>إيه اللي بيغيّر التكلفة؟</h2>
+      <h3>مستوى التصميم</h3>
+      <p>التصميم البسيط شكل نضيف ومرتب. التصميم المميز بيزوّد السعر حوالي 25%، والتصميم الحصري بالكامل (شاشات وهوية مرسومة من الصفر) حوالي 50%.</p>
+      <h3>حجم المحتوى</h3>
+      <p>موقع من 5 صفحات غير موقع فيه 50 منتج أو 30 خدمة. لو المحتوى والصور جاهزين عندك، ده بيوفّر وقت وفلوس.</p>
+      <h3>برمجة خاصة ولا قالب جاهز</h3>
+      <p>القالب الجاهز أرخص في الأول بس صعب يكبر. البرمجة الخاصة بتتفصّل على طريقة شغلك وأسرع في التحميل، وده بيفرق في جوجل.</p>
+      <h3>الربط بخدمات تانية</h3>
+      <p>بوابات الدفع وشركات الشحن والواتساب وبرامج الحسابات: كل ربط بيحتاج شغل إضافي.</p>
+      <h2>مصاريف تحسبها غير التصميم</h2>
+      <ul>
+        <li><a href={href("/domains/")}>الدومين</a> و<a href={href("/hosting/")}>الاستضافة</a>: بيتجددوا كل سنة.</li>
+        <li>الصيانة والتطوير بعد الإطلاق.</li>
+        <li>رسوم بوابة الدفع: نسبة صغيرة من كل عملية.</li>
+      </ul>
+      <p>في عتاد بنكتبلك كل المصاريف دي في عرض السعر، عشان ماتتفاجئش بحاجة.</p>
+    </div>
+  </section>
+
+  <Faq items={faq} title="أسئلة شائعة عن أسعار تصميم المواقع" />
+  <CtaBand title="اعرف تكلفة مشروعك بالظبط" text="اختار النوع والمميزات في الحاسبة وهيظهرلك السعر والمدة في 30 ثانية." />
+</BaseLayout>
+
+<style>
+  .meta { color: #7f92aa; font-size: 14px; margin: 0; }
+  .answer { border-inline-start: 4px solid var(--cyan); margin-top: -64px; position: relative; box-shadow: var(--shadow); }
+  .answer p { margin: 0; color: var(--ink); font-size: 17px; }
+  .prose h3 { margin-top: 1.2em; }
+  .prose p { color: var(--muted); }
+</style>

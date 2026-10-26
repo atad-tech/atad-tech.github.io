@@ -1,0 +1,20 @@
+---
+interface Props { size?: "s" | "m" }
+const { size = "m" } = Astro.props;
+const units = [["d", "يوم"], ["h", "ساعة"], ["m", "دقيقة"], ["s", "ثانية"]] as const;
+---
+<div class:list={["cd", `cd--${size}`]} data-countdown role="timer" aria-label="الوقت المتبقي على نهاية العرض">
+  {units.map(([k, label]) => (
+    <div><b data-unit={k}>00</b><span>{label}</span></div>
+  ))}
+</div>
+
+<style>
+  .cd { display: flex; gap: 6px; direction: rtl; }
+  .cd div { background: rgba(255,255,255,.08); border: 1px solid rgba(18,194,233,.45); border-radius: 9px; text-align: center; min-width: 54px; padding: 4px 6px; }
+  .cd b { display: block; font: 700 21px/1.25 var(--font-display); font-variant-numeric: tabular-nums; color: #fff; }
+  .cd span { font-size: 11px; color: #9fb0c7; }
+  .cd--s div { min-width: 40px; padding: 2px 4px; border-radius: 7px; }
+  .cd--s b { font-size: 15px; }
+  .cd--s span { font-size: 10px; }
+</style>

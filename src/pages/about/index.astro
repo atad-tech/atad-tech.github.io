@@ -1,0 +1,81 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageHero from "@/components/PageHero.astro";
+import CtaBand from "@/components/CtaBand.astro";
+import Icon from "@/components/Icon.astro";
+import { CATEGORIES, servicesIn, type CategoryId } from "@/data/services";
+import { href, servicePath } from "@/lib/url";
+import { breadcrumbs } from "@/lib/schema";
+
+const crumbs = [{ name: "عتاد", path: "/" }, { name: "من نحن", path: "/about/" }];
+const values = [
+  { t: "الجودة قبل السرعة", d: "مش بنسلّم حاجة إحنا مش فخورين بيها. كل شاشة وكل سطر كود بيتراجع." },
+  { t: "الوضوح", d: "سعر مكتوب، مدة واضحة، ومراحل تسليم متفق عليها من الأول." },
+  { t: "ملكيتك ليك", d: "الدومين والحسابات والكود والتصميمات باسمك وملكك." },
+  { t: "شراكة طويلة", d: "بنفضل معاك بعد الإطلاق، لأن نجاح مشروعك هو اللي بيجيبلنا عملاء جداد." },
+];
+const cats = Object.keys(CATEGORIES) as CategoryId[];
+---
+<BaseLayout
+  title="من نحن | عتاد ATAD للبرمجيات"
+  description="عتاد ATAD شركة برمجيات وتسويق رقمي بتبني تطبيقات ومواقع وأنظمة بتصميم خاص لكل عميل، وبتساعد البراندات تكبر أونلاين في مصر والخليج."
+  path="/about/"
+  schema={[breadcrumbs(crumbs)]}
+>
+  <PageHero
+    title="بنبني منتجات رقمية تخلّي البراندات المحلية تنافس العالمية"
+    lead="عتاد ATAD شركة برمجيات وتسويق رقمي. بنصمم ونبرمج تطبيقات ومواقع وأنظمة على مقاس كل عميل، وبنساعده يوصل لعملائه أونلاين."
+    crumbs={crumbs}
+  />
+
+  <section class="section">
+    <div class="container split">
+      <div>
+        <p class="eyebrow">حكايتنا</p>
+        <h2>ليه "عتاد"؟</h2>
+        <p>العتاد هو اللي بتجهزه قبل ما تدخل أي معركة. وإحنا شايفين إن كل صاحب شغل داخل معركة يومية على انتباه العميل، في سوق مليان منافسين.</p>
+        <p>دورنا نجهزك بالعتاد الصح: تطبيق أو موقع بتصميم خاص يعبّر عن براندك، سيستم ينظم شغلك، وتسويق يوصّلك للناس اللي محتاجاك فعلاً.</p>
+        <p>بنشتغل أونلاين مع عملاء في مصر والسعودية والإمارات والكويت وباقي الخليج.</p>
+      </div>
+      <div class="card mission">
+        <p class="eyebrow">مهمتنا</p>
+        <p class="big">إن أي براند، مهما كان حجمه، يقدر يبان بمستوى عالمي أونلاين.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="container">
+      <div class="section-head"><p class="eyebrow">قيمنا</p><h2>اللي بنشتغل بيه كل يوم</h2></div>
+      <div class="grid grid-4">{values.map((v) => <div class="card"><h3>{v.t}</h3><p>{v.d}</p></div>)}</div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head"><p class="eyebrow">بنعمل إيه</p><h2>4 تخصصات تحت سقف واحد</h2></div>
+      <div class="grid grid-4">
+        {cats.map((c) => (
+          <div class="card">
+            <h3>{CATEGORIES[c].name}</h3>
+            <ul class="mini">{servicesIn(c).map((s) => <li><a href={href(servicePath(s.slug))}><Icon name={s.icon} size={16} />{s.name}</a></li>)}</ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  .split { display: grid; grid-template-columns: 1.4fr 1fr; gap: 40px; align-items: center; }
+  .split p { color: var(--muted); font-size: 17px; }
+  .mission { border-top: 4px solid var(--cyan); padding: 32px; }
+  .big { font: 600 24px/1.6 var(--font-display) !important; color: var(--ink) !important; }
+  .mini { list-style: none; padding: 0; margin: 10px 0 0; display: grid; gap: 6px; }
+  .mini a { display: flex; gap: 8px; align-items: center; text-decoration: none; font-size: 15px; }
+  .mini a:hover { color: var(--cyan); }
+  .mini :global(svg) { color: var(--cyan); }
+  @media (max-width: 860px) { .split { grid-template-columns: 1fr; } }
+</style>

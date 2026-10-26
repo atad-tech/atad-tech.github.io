@@ -1,0 +1,77 @@
+---
+import Icon from "./Icon.astro";
+import { SERVICES } from "@/data/services";
+import { CONTACT, SITE, SOCIAL, whatsappLink } from "@/config/site";
+import { href, servicePath } from "@/lib/url";
+
+const year = new Date().getFullYear();
+const company = [
+  { label: "من نحن", path: "/about/" },
+  { label: "كل الخدمات", path: "/services/" },
+  { label: "أسعار تصميم المواقع والتطبيقات", path: "/website-cost/" },
+  { label: "حاسبة التكلفة", path: "/#calc" },
+  { label: "تواصل معنا", path: "/contact/" },
+];
+---
+<footer class="ftr">
+  <div class="container ftr__grid">
+    <div class="ftr__brand">
+      <img src={href("/logo-dark.png")} alt="عتاد ATAD" width="160" height="35" loading="lazy" />
+      <p>{SITE.tagline}. بنشتغل مع عملاء في مصر والسعودية والخليج.</p>
+      <a class="btn btn--wa" href={whatsappLink("أهلًا عتاد، عايز أستفسر عن خدماتكم.")} rel="noopener" data-wa="footer">
+        <Icon name="whatsapp" size={18} /> <span dir="ltr">{CONTACT.phoneDisplay}</span>
+      </a>
+      <div class="ftr__social">
+        <a href={SOCIAL.facebook} rel="noopener me" target="_blank" aria-label="فيسبوك"><Icon name="facebook" size={20} /></a>
+        <a href={SOCIAL.instagram} rel="noopener me" target="_blank" aria-label="إنستجرام"><Icon name="instagram" size={20} /></a>
+      </div>
+    </div>
+
+    <nav aria-label="خدماتنا" class="ftr__col ftr__col--wide">
+      <h2>خدماتنا</h2>
+      <ul class="ftr__services">
+        {SERVICES.map((s) => (
+          <li><a href={href(servicePath(s.slug))}>{s.name}</a><span lang="en">{s.en}</span></li>
+        ))}
+      </ul>
+    </nav>
+
+    <nav aria-label="عن عتاد" class="ftr__col">
+      <h2>عن عتاد</h2>
+      <ul>{company.map((l) => <li><a href={href(l.path)}>{l.label}</a></li>)}</ul>
+    </nav>
+  </div>
+
+  <div class="ftr__bar">
+    <div class="container ftr__bar-in">
+      <p>© {year} {SITE.legalName}. جميع الحقوق محفوظة.</p>
+      <p><a href={href("/privacy/")}>سياسة الخصوصية</a> · <a href={href("/terms/")}>شروط الاستخدام</a></p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .ftr { background: var(--navy-950); color: #c9d5e4; margin-top: 0; }
+  .ftr__grid { display: grid; grid-template-columns: 1fr 2.3fr 0.9fr; gap: 40px; padding-block: 56px 40px; }
+  .ftr__brand img { height: 34px; width: auto; margin-bottom: 14px; }
+  .ftr__brand p { color: #93a3b8; font-size: 15px; max-width: 34ch; }
+  .ftr__social { display: flex; gap: 8px; margin-top: 16px; }
+  .ftr__social a { width: 40px; height: 40px; display: grid; place-items: center; border: 1px solid #1f3350; border-radius: 10px; color: #c9d5e4; }
+  .ftr__social a:hover { border-color: var(--cyan); color: var(--cyan); }
+  .ftr h2 { font-size: 18px; color: #fff; margin: 0 0 18px; padding-bottom: 10px; position: relative; }
+  .ftr h2::after { content: ""; position: absolute; bottom: 0; inset-inline-start: 0; width: 36px; height: 3px; border-radius: 2px; background: var(--cyan); }
+  .ftr ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  .ftr a { text-decoration: none; }
+  .ftr li a:hover { color: var(--cyan); }
+  .ftr ul.ftr__services { display: block; columns: 2; column-gap: 28px; }
+  .ftr ul.ftr__services li { break-inside: avoid; margin-bottom: 12px; }
+  .ftr__services li { display: flex; align-items: baseline; gap: 8px; white-space: nowrap; }
+  .ftr__services li::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--cyan); flex: none; transform: translateY(-2px); }
+  .ftr__services span { font-size: 12.5px; color: #64768f; }
+  .ftr__bar { background: #04101f; border-top: 1px solid #142844; }
+  .ftr__bar-in { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding-block: 16px; padding-inline-end: 84px; font-size: 13.5px; color: #7f92aa; }
+  .ftr__bar p { margin: 0; }
+  .ftr__bar a:hover { color: #fff; }
+  @media (max-width: 960px) { .ftr__grid { grid-template-columns: 1fr 1fr; } .ftr__col--wide { grid-column: 1 / -1; grid-row: 2; } }
+  @media (max-width: 600px) { .ftr__grid { grid-template-columns: 1fr; } .ftr__col--wide { grid-row: auto; } .ftr ul.ftr__services { columns: 1; } .ftr__bar-in { padding-inline-end: var(--gutter); } .ftr { padding-bottom: 72px; } }
+</style>

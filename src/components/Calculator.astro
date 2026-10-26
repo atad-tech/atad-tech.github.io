@@ -1,0 +1,156 @@
+---
+import { ADDONS, DESIGN_LEVELS, MARKETS, PROJECT_TYPES } from "@/config/pricing";
+import { CONTACT, OFFER } from "@/config/site";
+
+const config = JSON.stringify({
+  types: PROJECT_TYPES, addons: ADDONS, designs: DESIGN_LEVELS, markets: MARKETS,
+  discount: OFFER.percent, whatsapp: CONTACT.whatsapp,
+});
+const typeKeys = Object.keys(PROJECT_TYPES) as (keyof typeof PROJECT_TYPES)[];
+const addonKeys = Object.keys(ADDONS) as (keyof typeof ADDONS)[];
+const designKeys = Object.keys(DESIGN_LEVELS) as (keyof typeof DESIGN_LEVELS)[];
+const marketKeys = Object.keys(MARKETS) as (keyof typeof MARKETS)[];
+---
+<form class="calc" id="calc" aria-labelledby="calc-title" data-config={config}>
+  <h2 id="calc-title">حاسبة التكلفة {OFFER.percent > 0 && <span class="tag" data-offer hidden>خصم {OFFER.percent}%</span>}</h2>
+  <p class="hint">كل اختيار بيحدّث السعر على طول.</p>
+
+  <fieldset>
+    <legend>محتاج إيه؟</legend>
+    <div class="opts">
+      {typeKeys.map((k, i) => (
+        <label class="opt"><input type="radio" name="type" value={k} checked={i === 0} /><span>{PROJECT_TYPES[k].name}<small>{PROJECT_TYPES[k].hint}</small></span></label>
+      ))}
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>المميزات</legend>
+    <div class="opts">
+      {addonKeys.map((k) => (
+        <label class="opt"><input type="checkbox" name="f" value={k} /><span>{ADDONS[k].name}</span></label>
+      ))}
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>التصميم</legend>
+    <div class="opts three">
+      {designKeys.map((k, i) => (
+        <label class="opt"><input type="radio" name="design" value={k} checked={i === 0} /><span>{DESIGN_LEVELS[k]}</span></label>
+      ))}
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <legend>انت فين؟</legend>
+    <div class="opts three">
+      {marketKeys.map((k, i) => (
+        <label class="opt"><input type="radio" name="market" value={k} checked={i === 0} /><span>{MARKETS[k].label}</span></label>
+      ))}
+    </div>
+  </fieldset>
+
+  <div class="result" aria-live="polite">
+    <div><small data-r="label">التكلفة التقريبية</small><s data-r="old" hidden></s><span class="num" data-r="price">—</span></div>
+    <div><small>مدة التنفيذ</small><b data-r="time">—</b></div>
+  </div>
+  <button class="btn btn--wa btn--lg submit" type="submit">ابعتلي عرض سعر على واتساب</button>
+  <p class="fine">ده تقدير مبدئي. السعر النهائي بيتحدد بعد ما نفهم تفاصيل مشروعك.</p>
+</form>
+
+<script>
+  import { offerActive } from "@/scripts/offer";
+  import { trackLead, withSource } from "@/scripts/lead";
+
+  type Range = [number, number];
+  interface Cfg {
+    types: Record<string, { name: string; price: Range; weeks: Range }>;
+    addons: Record<string, { name: string; price: Range }>;
+    designs: Record<string, string>;
+    markets: Record<string, { label: string; currency: string; rate: number; mult: number }>;
+    discount: number; whatsapp: string;
+  }
+
+  const form = document.getElementById("calc") as HTMLFormElement | null;
+  if (form) {
+    const cfg = JSON.parse(form.dataset["config"] ?? "{}") as Cfg;
+    const out = (k: string) => form.querySelector<HTMLElement>(`[data-r="${k}"]`)!;
+    const round = (n: number) => { const st = n >= 10000 ? 1000 : n >= 1000 ? 100 : 10; return Math.round(n / st) * st; };
+    const f = (n: number) => n.toLocaleString("en-US");
+
+    const state = () => {
+      const fd = new FormData(form);
+      const type = String(fd.get("type")), design = String(fd.get("design")), market = String(fd.get("market"));
+      const feats = fd.getAll("f").map(String);
+      const t = cfg.types[type]!, m = cfg.markets[market]!, d = parseFloat(design);
+      let [lo, hi] = t.price;
+      for (const k of feats) { lo += cfg.addons[k]!.price[0]; hi += cfg.addons[k]!.price[1]; }
+      lo = round(lo * d * m.mult * m.rate); hi = round(hi * d * m.mult * m.rate);
+      const pct = offerActive() ? cfg.discount : 0;
+      const extra = Math.ceil(feats.length / 2);
+      return {
+        type, design, market, feats, lo, hi, pct, cur: m.currency,
+        dlo: round((lo * (100 - pct)) / 100), dhi: round((hi * (100 - pct)) / 100),
+        weeks: [t.weeks[0] + extra, t.weeks[1] + extra] as const,
+      };
+    };
+
+    const render = () => {
+      const s = state();
+      const range = (a: number, b: number) => `${f(a)} – ${f(b)} ${s.cur}`;
+      out("price").textContent = s.pct ? range(s.dlo, s.dhi) : range(s.lo, s.hi);
+      out("old").hidden = !s.pct;
+      out("old").textContent = range(s.lo, s.hi);
+      out("label").textContent = s.pct ? `التكلفة بعد خصم ${s.pct}%` : "التكلفة التقريبية";
+      out("time").textContent = `${s.weeks[0]} إلى ${s.weeks[1]} أسابيع`;
+    };
+
+    const message = () => {
+      const s = state();
+      return withSource([
+        "أهلًا عتاد، عايز عرض سعر:",
+        `• المشروع: ${cfg.types[s.type]!.name}`,
+        `• المميزات: ${s.feats.length ? s.feats.map((k) => cfg.addons[k]!.name).join("، ") : "الأساسي"}`,
+        `• التصميم: ${cfg.designs[s.design]}`,
+        `• المكان: ${cfg.markets[s.market]!.label}`,
+        s.pct
+          ? `• التقدير بعد خصم ${s.pct}%: ${f(s.dlo)} – ${f(s.dhi)} ${s.cur} (بدل ${f(s.lo)} – ${f(s.hi)})`
+          : `• التقدير من الحاسبة: ${f(s.lo)} – ${f(s.hi)} ${s.cur}`,
+      ].join("\n"));
+    };
+
+    form.addEventListener("change", render);
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      trackLead("calculator");
+      window.open(`https://wa.me/${cfg.whatsapp}?text=${encodeURIComponent(message())}`, "_blank", "noopener");
+    });
+    document.addEventListener("atad:offer-ended", render);
+    render();
+  }
+</script>
+
+<style>
+  .calc { background: var(--surface); color: var(--ink); border-radius: 16px; padding: 24px; box-shadow: var(--shadow-l); border-top: 4px solid var(--cyan); scroll-margin-top: calc(var(--header-h) + 16px); }
+  .calc h2 { font-size: 21px; margin: 0 0 4px; display: flex; align-items: center; gap: 8px; }
+  .tag { background: var(--cyan-soft); border: 1px solid var(--cyan); border-radius: 6px; padding: 1px 8px; font: 600 13px var(--font-body); }
+  .hint { color: var(--muted); font-size: 14px; margin: 0 0 18px; }
+  fieldset { border: 0; margin: 0 0 16px; padding: 0; }
+  legend { font-weight: 600; font-size: 14.5px; margin: 0 0 8px; padding: 0; }
+  .opts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .opts.three { grid-template-columns: repeat(3, 1fr); }
+  .opt { position: relative; }
+  .opt input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+  .opt span { display: block; border: 1.5px solid var(--line); border-radius: 9px; padding: 9px 12px; font-size: 14.5px; cursor: pointer; transition: border-color .12s, background .12s; height: 100%; }
+  .opt span small { display: block; color: var(--muted); font-size: 12.5px; line-height: 1.4; }
+  .opt input:checked + span { border-color: var(--cyan); background: var(--cyan-soft); box-shadow: inset 0 0 0 1px var(--cyan); }
+  .opt input:focus-visible + span { outline: 2px solid var(--cyan); outline-offset: 2px; }
+  .result { background: var(--navy-900); color: #fff; border-radius: 10px; padding: 16px 18px; margin: 6px 0 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .result .num { font: 700 25px/1.3 var(--font-display); color: var(--cyan); display: block; }
+  .result small { display: block; color: #9fb0c7; font-size: 12.5px; }
+  .result s { display: block; color: #9fb0c7; font-size: 15px; text-decoration-thickness: 2px; }
+  .submit { width: 100%; }
+  .fine { color: var(--muted); font-size: 12.5px; margin: 10px 0 0; text-align: center; }
+  @media (max-width: 520px) { .calc { padding: 18px; } .opts.three { grid-template-columns: 1fr 1fr; } }
+</style>

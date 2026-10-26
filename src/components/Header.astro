@@ -1,0 +1,140 @@
+---
+import Icon from "./Icon.astro";
+import Countdown from "./Countdown.astro";
+import { CATEGORIES, servicesIn, type CategoryId } from "@/data/services";
+import { OFFER, whatsappLink } from "@/config/site";
+import { href, servicePath } from "@/lib/url";
+
+const current = Astro.url.pathname;
+const isActive = (p: string) => current === href(p);
+const cats = Object.keys(CATEGORIES) as CategoryId[];
+const offerText = `أهلًا عتاد، عايز أحجز خصم ${OFFER.percent}% على أول مشروع وأعرف عرض السعر.`;
+---
+{OFFER.percent > 0 && (
+  <div class="promo" data-offer hidden>
+    <div class="container promo__in">
+      <p class="promo__msg"><b>خصم {OFFER.percent}%</b>{" "}{OFFER.label} · العرض بيخلص قريب</p>
+      <Countdown size="s" />
+      <a class="promo__cta" href={href("/#calc")}>احسب سعرك بعد الخصم</a>
+    </div>
+  </div>
+)}
+
+<header class="hdr">
+  <div class="container hdr__in">
+    <a class="brand" href={href("/")} aria-label="عتاد ATAD الصفحة الرئيسية">
+      <img src={href("/logo-dark.png")} alt="عتاد ATAD Software Engineering" width="173" height="38" fetchpriority="high" />
+    </a>
+
+    <nav class="nav" id="nav" aria-label="القائمة الرئيسية">
+      <ul class="nav__list">
+        <li><a href={href("/")} aria-current={isActive("/") ? "page" : undefined}>الرئيسية</a></li>
+        <li class="has-mega">
+          <a href={href("/services/")} class="nav__trigger" aria-current={isActive("/services/") ? "page" : undefined}>
+            خدماتنا <Icon name="chevron" size={16} />
+          </a>
+          <div class="mega" role="region" aria-label="كل الخدمات">
+            <div class="mega__grid">
+              {cats.map((c) => (
+                <div>
+                  <p class="mega__cat">{CATEGORIES[c].name}</p>
+                  <ul>
+                    {servicesIn(c).map((s) => (
+                      <li><a href={href(servicePath(s.slug))} aria-current={isActive(servicePath(s.slug)) ? "page" : undefined}><Icon name={s.icon} size={18} /> {s.name}</a></li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        </li>
+        <li><a href={href("/website-cost/")} aria-current={isActive("/website-cost/") ? "page" : undefined}>الأسعار</a></li>
+        <li><a href={href("/about/")} aria-current={isActive("/about/") ? "page" : undefined}>من نحن</a></li>
+        <li><a href={href("/contact/")} aria-current={isActive("/contact/") ? "page" : undefined}>تواصل معنا</a></li>
+      </ul>
+      <a class="btn btn--primary nav__cta" href={href("/#calc")}>اطلب عرض سعر</a>
+    </nav>
+
+    <div class="hdr__actions">
+      <a class="btn btn--wa hdr__wa" href={whatsappLink(offerText)} rel="noopener" data-wa="header">
+        <Icon name="whatsapp" size={18} /><span>كلمنا واتساب</span>
+      </a>
+      <button class="burger" type="button" aria-controls="nav" aria-expanded="false" aria-label="فتح القائمة">
+        <Icon name="menu" class="i-open" /><Icon name="close" class="i-close" />
+      </button>
+    </div>
+  </div>
+</header>
+
+<script>
+  const btn = document.querySelector<HTMLButtonElement>(".burger");
+  const nav = document.getElementById("nav");
+  btn?.addEventListener("click", () => {
+    const open = btn.getAttribute("aria-expanded") !== "true";
+    if (open) {
+      const bottom = document.querySelector(".hdr")?.getBoundingClientRect().bottom ?? 68;
+      nav?.style.setProperty("--nav-top", `${Math.round(bottom)}px`);
+    }
+    btn.setAttribute("aria-expanded", String(open));
+    btn.setAttribute("aria-label", open ? "قفل القائمة" : "فتح القائمة");
+    nav?.classList.toggle("is-open", open);
+    document.body.classList.toggle("nav-open", open);
+  });
+  nav?.querySelectorAll("a").forEach((a) => a.addEventListener("click", () => {
+    if (btn?.getAttribute("aria-expanded") === "true") btn.click();
+  }));
+</script>
+
+<style>
+  .promo { background: linear-gradient(90deg, #0e2a47, #11284a); color: #fff; border-bottom: 1px solid #1f3a5e; font-size: 14.5px; }
+  .promo__in { display: flex; align-items: center; justify-content: center; gap: 10px 22px; flex-wrap: wrap; padding-block: 8px; }
+  .promo__msg { margin: 0; color: #c9d5e4; }
+  .promo__msg b { color: var(--cyan); font-family: var(--font-display); }
+  .promo__cta { color: var(--cyan); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+
+  .hdr { position: sticky; top: 0; z-index: 50; background: rgba(10, 27, 51, .96); backdrop-filter: saturate(140%) blur(10px); color: #fff; border-bottom: 1px solid rgba(255,255,255,.06); }
+  .hdr__in { display: flex; align-items: center; gap: 20px; min-height: var(--header-h); }
+  .brand img { height: 36px; width: auto; }
+  .nav { display: flex; align-items: center; gap: 14px; margin-inline-start: auto; }
+  .nav__list { list-style: none; display: flex; gap: 4px; margin: 0; padding: 0; }
+  .nav__list > li > a { display: inline-flex; align-items: center; gap: 4px; padding: 10px 12px; border-radius: 8px; text-decoration: none; color: #c9d5e4; font-weight: 500; }
+  .nav__list > li > a:hover, .nav__list > li > a[aria-current="page"] { color: #fff; background: rgba(255,255,255,.06); }
+  .nav__cta { padding: 10px 16px; }
+  .hdr__actions { display: flex; align-items: center; gap: 8px; }
+  .hdr__wa { padding: 10px 14px; }
+
+  .has-mega { position: relative; }
+  .mega { position: absolute; top: 100%; inset-inline-start: 50%; transform: translateX(50%) translateY(6px); width: min(860px, 92vw); background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: var(--radius-l); box-shadow: var(--shadow-l); padding: 22px; opacity: 0; visibility: hidden; transition: opacity .15s, transform .15s, visibility .15s; }
+  .has-mega:hover .mega, .has-mega:focus-within .mega { opacity: 1; visibility: visible; transform: translateX(50%) translateY(0); }
+  .mega__grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+  .mega__cat { font: 600 13.5px var(--font-display); color: var(--muted); margin: 0 0 8px; }
+  .mega ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+  .mega a { display: flex; align-items: center; gap: 8px; padding: 7px 8px; border-radius: 8px; text-decoration: none; font-size: 15px; }
+  .mega a:hover, .mega a[aria-current="page"] { background: var(--cyan-soft); }
+  .mega a :global(svg) { color: var(--cyan); flex: none; }
+
+  .burger { display: none; background: transparent; border: 1px solid rgba(255,255,255,.2); color: #fff; border-radius: 9px; width: 44px; height: 44px; cursor: pointer; place-items: center; }
+  .burger :global(.i-close) { display: none; }
+  .burger[aria-expanded="true"] :global(.i-open) { display: none; }
+  .burger[aria-expanded="true"] :global(.i-close) { display: block; }
+
+  @media (max-width: 1060px) {
+    .burger { display: grid; }
+    .hdr__actions { margin-inline-start: auto; }
+    .hdr__wa span { display: none; }
+    .hdr { backdrop-filter: none; background: var(--navy-900); }
+    .nav { position: fixed; inset: var(--nav-top, var(--header-h)) 0 0 0; z-index: 60; background: var(--navy-900); flex-direction: column; align-items: stretch; padding: 16px var(--gutter) 32px; overflow-y: auto; display: none; margin: 0; }
+    .nav.is-open { display: flex; }
+    .nav__list { flex-direction: column; }
+    .nav__list > li > a { padding: 14px 8px; font-size: 17px; }
+    .nav__trigger :global(svg) { display: none; }
+    .mega { position: static; transform: none; opacity: 1; visibility: visible; width: auto; background: transparent; color: #fff; border: 0; box-shadow: none; padding: 0 8px 8px; }
+    .has-mega:hover .mega, .has-mega:focus-within .mega { transform: none; }
+    .mega__grid { grid-template-columns: 1fr 1fr; gap: 14px; }
+    .mega__cat { color: #7f92aa; }
+    .mega a { color: #c9d5e4; font-size: 14.5px; }
+    .nav__cta { margin-top: 12px; }
+    :global(body.nav-open) { overflow: hidden; }
+  }
+  @media (max-width: 520px) { .mega__grid { grid-template-columns: 1fr; } .promo__in { gap: 6px 12px; } }
+</style>

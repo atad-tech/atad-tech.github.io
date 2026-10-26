@@ -1,0 +1,22 @@
+---
+import Icon from "./Icon.astro";
+import type { Service } from "@/data/services";
+import { href, servicePath } from "@/lib/url";
+import { fmt } from "@/config/pricing";
+
+interface Props { service: Service; headingLevel?: "h2" | "h3" }
+const { service: s, headingLevel = "h3" } = Astro.props;
+const H = headingLevel;
+---
+<a class="card card--link" href={href(servicePath(s.slug))}>
+  <span class="icon-badge"><Icon name={s.icon} /></span>
+  <H>{s.name}</H>
+  <p>{s.short}</p>
+  {s.priceFrom && <p class="from">يبدأ من {fmt(s.priceFrom)} جنيه</p>}
+  <span class="more">اعرف أكتر <Icon name="arrow" size={16} /></span>
+</a>
+
+<style>
+  .from { margin-top: 10px !important; font-weight: 600; color: var(--ink) !important; font-size: 14.5px !important; }
+  h2 { font-size: 19px; margin-bottom: 6px; }
+</style>

@@ -1,0 +1,13 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageHero from "@/components/PageHero.astro";
+import { href } from "@/lib/url";
+---
+<BaseLayout title="الصفحة مش موجودة | عتاد ATAD" description="الصفحة اللي بتدوّر عليها مش موجودة." path="/404/" noindex>
+  <PageHero title="الصفحة دي مش موجودة" lead="ممكن الرابط اتغيّر أو اتكتب غلط. جرّب من هنا:">
+    <div class="btn-row">
+      <a class="btn btn--primary btn--lg" href={href("/")}>الصفحة الرئيسية</a>
+      <a class="btn btn--ghost btn--lg" href={href("/services/")}>كل الخدمات</a>
+    </div>
+  </PageHero>
+</BaseLayout>

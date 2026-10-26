@@ -1,0 +1,146 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Calculator from "@/components/Calculator.astro";
+import Countdown from "@/components/Countdown.astro";
+import ServiceCard from "@/components/ServiceCard.astro";
+import Faq from "@/components/Faq.astro";
+import CtaBand from "@/components/CtaBand.astro";
+import Icon from "@/components/Icon.astro";
+import { CATEGORIES, SERVICES, servicesIn, type CategoryId } from "@/data/services";
+import { OFFER, SITE, whatsappLink } from "@/config/site";
+import { PROJECT_TYPES, fmt } from "@/config/pricing";
+import { href, servicePath } from "@/lib/url";
+import { faqPage } from "@/lib/schema";
+
+const featured = SERVICES.filter((s) => s.featured);
+const others = (Object.keys(CATEGORIES) as CategoryId[]).filter((c) => c !== "dev");
+const offerDate = new Date(`${OFFER.endsOn}T12:00:00+02:00`).toLocaleDateString("ar-EG", { day: "numeric", month: "long", year: "numeric", timeZone: "Africa/Cairo" });
+const why = [
+  { t: "تصميم خاص، مش تمبلت", d: "كل مشروع بيتصمم من الصفر على هوية براندك، عشان شغلك مايشبهش حد." },
+  { t: "فريق واحد لكل حاجة", d: "برمجة وتصميم وتسويق واستضافة. مش هتنسّق بين 4 شركات." },
+  { t: "سعر واضح من الأول", d: "تقدير فوري من الحاسبة، وبعدها سعر نهائي مكتوب قبل ما نبدأ." },
+  { t: "بتدفع على شغل شفته", d: "الدفع على مراحل، وكل مرحلة مربوطة بتسليم واضح." },
+];
+const faq = [
+  { q: "كام تكلفة تصميم موقع أو تطبيق؟", a: `الموقع التعريفي بيبدأ من حوالي ${fmt(PROJECT_TYPES.site.price[0])} جنيه، والمتجر من ${fmt(PROJECT_TYPES.store.price[0])}، والتطبيق من ${fmt(PROJECT_TYPES.app.price[0])} جنيه. السعر بيتحدد حسب المميزات، وتقدر تحسبه من الحاسبة في أول الصفحة.` },
+  { q: "بتشتغلوا مع عملاء من الخليج؟", a: "أيوه، بنشتغل أونلاين مع عملاء في مصر والسعودية والإمارات والكويت، وبنتابع بمكالمات فيديو وتقارير دورية." },
+  { q: "الدفع بيبقى إزاي؟", a: "على مراحل، وكل مرحلة مربوطة بتسليم واضح، فإنت بتدفع على شغل شفته." },
+  { q: "بعد ما المشروع يخلص، مين يتابعه؟", a: "إحنا. بنقدم دعم فني وصيانة، وتطوير لأي مميزات جديدة تحتاجها بعدين." },
+];
+---
+<BaseLayout
+  title="عتاد ATAD | برمجة تطبيقات وتصميم مواقع وتسويق رقمي في مصر والخليج"
+  description={SITE.description}
+  path="/"
+  schema={[faqPage(faq)]}
+>
+  <section class="hero dark">
+    <div class="container hero__grid">
+      <div class="hero__copy">
+        <p class="eyebrow">عتاد للبرمجيات · مصر والخليج</p>
+        <h1>تطبيقات ومواقع بتصميم خاص، <span>وتسويق يجيبلك عملاء</span></h1>
+        <p class="lead">{SITE.tagline}. اعرف تكلفة مشروعك في 30 ثانية، وابعتها لنا على واتساب ونرد عليك بتصور كامل.</p>
+        <div class="btn-row">
+          <a class="btn btn--primary btn--lg" href={href("/services/")}>شوف خدماتنا</a>
+          <a class="btn btn--ghost btn--lg" href={whatsappLink("أهلًا عتاد، عايز أستفسر عن مشروع.")} rel="noopener" data-wa="hero"><Icon name="whatsapp" size={20} />كلمنا واتساب</a>
+        </div>
+        <ul class="proof">
+          <li><b>30 ثانية</b><span>وتعرف السعر التقريبي</span></li>
+          <li><b>12 خدمة</b><span>تحت سقف واحد</span></li>
+          <li><b>مجانًا</b><span>استشارة وتصور مبدئي</span></li>
+        </ul>
+      </div>
+      <Calculator />
+    </div>
+  </section>
+
+  {OFFER.percent > 0 && (
+    <section class="offer" data-offer hidden aria-label="عرض الخصم">
+      <div class="container offer__in">
+        <div class="offer__msg">
+          <span class="offer__pct">{OFFER.percent}%</span>
+          <div><b>خصم {OFFER.percent}% {OFFER.label}</b><small>اطلب عرض سعرك قبل {offerDate}</small></div>
+        </div>
+        <Countdown />
+        <div class="btn-row">
+          <a class="btn btn--primary" href="#calc">احسب سعرك بعد الخصم</a>
+          <a class="btn btn--wa" href={whatsappLink(`أهلًا عتاد، عايز أحجز خصم ${OFFER.percent}% على أول مشروع وأعرف عرض السعر.`)} rel="noopener" data-wa="offer">احجز الخصم على واتساب</a>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="section" id="services">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">البرمجة والتطوير</p>
+        <h2>نبني منتجك الرقمي من الصفر</h2>
+        <p>{CATEGORIES.dev.blurb}</p>
+      </div>
+      <div class="grid grid-4">{featured.map((s) => <ServiceCard service={s} />)}</div>
+    </div>
+  </section>
+
+  <section class="section section--alt">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">وكمان</p>
+        <h2>كل اللي براندك محتاجه عشان يكبر</h2>
+      </div>
+      <div class="grid grid-3">
+        {others.map((c) => (
+          <div class="card cat">
+            <h3>{CATEGORIES[c].name}</h3>
+            <p>{CATEGORIES[c].blurb}</p>
+            <ul>
+              {servicesIn(c).map((s) => (
+                <li><a href={href(servicePath(s.slug))}><Icon name={s.icon} size={18} />{s.name}</a></li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+      <p class="all"><a class="btn btn--ghost" href={href("/services/")}>كل الخدمات <Icon name="arrow" size={18} /></a></p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head"><p class="eyebrow">ليه عتاد</p><h2>شريك تقني فاهم شغلك، مش منفّذ وخلاص</h2></div>
+      <div class="grid grid-4">
+        {why.map((w) => <div class="card"><span class="icon-badge"><Icon name="check" /></span><h3>{w.t}</h3><p>{w.d}</p></div>)}
+      </div>
+    </div>
+  </section>
+
+  <Faq items={faq} />
+  <CtaBand title="جاهز تبدأ مشروعك؟ الخصم مستنيك" />
+</BaseLayout>
+
+<style>
+  .hero { position: relative; overflow: hidden; padding-block: clamp(36px, 5vw, 64px) clamp(56px, 7vw, 88px); }
+  .hero::after { content: ""; position: absolute; inset-inline-start: -120px; bottom: -160px; width: 420px; height: 420px; background: conic-gradient(from 210deg, transparent 0 60%, rgba(18,194,233,.22) 60% 75%, transparent 75%); clip-path: polygon(50% 0, 100% 100%, 0 100%); pointer-events: none; }
+  .hero__grid { display: grid; grid-template-columns: 1fr 1.05fr; gap: 48px; align-items: start; position: relative; z-index: 1; }
+  .hero__copy { padding-top: 12px; }
+  .hero h1 span { color: var(--cyan); }
+  .lead { font-size: 18.5px; max-width: 46ch; margin-bottom: 26px; }
+  .proof { list-style: none; padding: 0; margin: 34px 0 0; display: flex; gap: 32px; flex-wrap: wrap; }
+  .proof b { display: block; font: 700 26px/1.1 var(--font-display); color: var(--cyan); }
+  .proof span { color: #9fb0c7; font-size: 13.5px; }
+
+  .offer { background: linear-gradient(90deg, #0e2a47, #11284a); color: #fff; border-block: 1px solid #1f3a5e; }
+  .offer__in { display: flex; align-items: center; justify-content: space-between; gap: 18px 28px; flex-wrap: wrap; padding-block: 20px; }
+  .offer__msg { display: flex; align-items: center; gap: 14px; }
+  .offer__pct { background: var(--cyan); color: var(--cyan-ink); font: 700 26px/1.2 var(--font-display); border-radius: 12px; padding: 6px 14px; }
+  .offer__msg b { display: block; font-size: 18px; }
+  .offer__msg small { color: #b9c6d8; font-size: 14px; }
+
+  .cat ul { list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 4px; }
+  .cat a { display: flex; align-items: center; gap: 10px; text-decoration: none; padding: 8px 10px; border-radius: 8px; font-weight: 500; }
+  .cat a:hover { background: var(--cyan-soft); }
+  .cat a :global(svg) { color: var(--cyan); }
+  .all { margin: 28px 0 0; text-align: center; }
+
+  @media (max-width: 960px) { .hero__grid { grid-template-columns: 1fr; gap: 32px; } }
+  @media (max-width: 600px) { .offer__in { justify-content: center; text-align: center; } .offer__msg { flex-direction: column; } .proof { gap: 20px; } }
+</style>
