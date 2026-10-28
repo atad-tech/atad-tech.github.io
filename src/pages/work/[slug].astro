@@ -1,0 +1,128 @@
+---
+import type { GetStaticPaths } from "astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageHero from "@/components/PageHero.astro";
+import WorkCard from "@/components/WorkCard.astro";
+import ServiceCard from "@/components/ServiceCard.astro";
+import CtaBand from "@/components/CtaBand.astro";
+import Icon from "@/components/Icon.astro";
+import { CONCEPT_NOTE, KIND_LABEL, WORK, screenSrc, workPath, type Work } from "@/data/work";
+import { serviceBySlug } from "@/data/services";
+import { whatsappLink } from "@/config/site";
+import { absolute, href } from "@/lib/url";
+import { breadcrumbs, ORG_ID } from "@/lib/schema";
+
+export const getStaticPaths = (() => WORK.map((work) => ({ params: { slug: work.slug }, props: { work } }))) satisfies GetStaticPaths;
+
+interface Props { work: Work }
+const { work: w } = Astro.props;
+const path = workPath(w.slug);
+const crumbs = [
+  { name: "عتاد", path: "/" },
+  { name: "أعمالنا", path: "/work/" },
+  { name: w.title, path },
+];
+const others = WORK.filter((o) => o.slug !== w.slug).slice(0, 3);
+const services = w.services.map(serviceBySlug).filter((s) => s !== undefined);
+const waText = `أهلًا عتاد، شفت ${w.title} على موقعكم وعايز تطبيق زيه لنشاطي.`;
+const schema = {
+  "@type": "CreativeWork",
+  "@id": `${absolute(path)}#work`,
+  name: w.title,
+  description: w.seo.description,
+  url: absolute(path),
+  genre: w.kind === "concept" ? "Concept design" : "Client project",
+  keywords: [w.industry, "تصميم تطبيقات", "UI/UX"].join(", "),
+  creator: { "@id": ORG_ID() },
+  image: w.screens.map((s) => absolute(screenSrc(w, s.file, 720))),
+  inLanguage: "ar",
+};
+---
+<BaseLayout title={w.seo.title} description={w.seo.description} path={path} image={{ path: `/work/${w.slug}/og.jpg`, alt: `${w.title} — ${KIND_LABEL[w.kind]} من عتاد ATAD` }} schema={[schema, breadcrumbs(crumbs)]}>
+  <PageHero title={w.title} lead={w.intro} crumbs={crumbs} eyebrow={`${KIND_LABEL[w.kind]} · ${w.industry}`}>
+    <ul class="meta">
+      <li><span>النوع</span><b>{KIND_LABEL[w.kind]}</b></li>
+      <li><span>المنصات</span><b lang="en">{w.platforms.join(" · ")}</b></li>
+      <li><span>الشاشات</span><b>{w.screens.length} شاشات</b></li>
+    </ul>
+    <div class="btn-row">
+      <a class="btn btn--wa btn--lg" href={whatsappLink(waText)} rel="noopener noreferrer" data-wa={`work-${w.slug}`}><Icon name="whatsapp" size={20} />عايز تطبيق زي ده</a>
+      <a class="btn btn--ghost btn--lg" href="#screens">شوف الشاشات</a>
+    </div>
+  </PageHero>
+
+  {w.kind === "concept" && (
+    <div class="container"><p class="note" role="note"><Icon name="check" size={18} />{CONCEPT_NOTE}</p></div>
+  )}
+
+  <section class="section section--tight" id="screens" aria-labelledby="screens-h">
+    <div class="container">
+      <div class="section-head"><p class="eyebrow">الشاشات</p><h2 id="screens-h">رحلة العميل جوه التطبيق</h2></div>
+    </div>
+    <ol class="shots" tabindex="0" aria-label="شاشات التطبيق، اسحب للجنب عشان تشوف الباقي">
+      {w.screens.map((s, i) => (
+        <li>
+          <figure>
+            <img
+              src={href(screenSrc(w, s.file, 360))}
+              srcset={`${href(screenSrc(w, s.file, 360))} 360w, ${href(screenSrc(w, s.file, 720))} 720w`}
+              sizes="(max-width: 600px) 66vw, 260px"
+              width="360"
+              height={w.h360}
+              alt={s.alt}
+              loading={i < 3 ? "eager" : "lazy"}
+              decoding="async"
+            />
+            <figcaption><span>{String(i + 1).padStart(2, "0")}</span>{s.label}</figcaption>
+          </figure>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="section section--alt">
+    <div class="container">
+      <div class="section-head"><p class="eyebrow">المميزات</p><h2>إيه اللي يخلّي التطبيق ده يبيع</h2></div>
+      <div class="grid grid-3">
+        {w.features.map((f) => <div class="card"><span class="icon-badge"><Icon name="check" /></span><h3>{f.t}</h3><p>{f.d}</p></div>)}
+      </div>
+    </div>
+  </section>
+
+  {services.length > 0 && (
+    <section class="section">
+      <div class="container">
+        <div class="section-head"><p class="eyebrow">الخدمات</p><h2>اللي بنقدمه في مشروع زي ده</h2></div>
+        <div class="grid grid-2">{services.map((s) => <ServiceCard service={s} />)}</div>
+      </div>
+    </section>
+  )}
+
+  {others.length > 0 && (
+    <section class="section section--alt">
+      <div class="container">
+        <div class="section-head"><p class="eyebrow">أعمال تانية</p><h2>شوف كمان</h2></div>
+        <div class="grid grid-3">{others.map((o) => <WorkCard work={o} />)}</div>
+        <p class="all"><a class="btn btn--ghost" href={href("/work/")}>كل الأعمال <Icon name="arrow" size={18} /></a></p>
+      </div>
+    </section>
+  )}
+
+  <CtaBand title="عايز تطبيق بالمستوى ده لنشاطك؟" waText={waText} />
+</BaseLayout>
+
+<style>
+  .meta { list-style: none; display: flex; flex-wrap: wrap; gap: 12px 32px; padding: 0; margin: 0 0 26px; }
+  .meta span { display: block; color: #9fb0c7; font-size: 13.5px; }
+  .meta b { font: 600 17px/1.4 var(--font-display); }
+  .note { display: flex; gap: 10px; align-items: flex-start; margin: 24px 0 0; padding: 14px 18px; border-radius: var(--radius); background: var(--cyan-soft); color: var(--ink); font-size: 15px; }
+  .note :global(svg) { color: var(--accent-ink); flex: none; margin-top: 4px; }
+
+  .shots { list-style: none; margin: 0 auto; padding: 8px max(var(--gutter), calc((100vw - var(--container)) / 2 + var(--gutter))) 24px; display: grid; grid-auto-flow: column; grid-auto-columns: min(66vw, 260px); gap: 22px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: thin; overscroll-behavior-x: contain; }
+  .shots li { scroll-snap-align: center; }
+  .shots figure { margin: 0; }
+  .shots img { width: 100%; filter: drop-shadow(0 14px 26px rgba(10, 27, 51, .22)); }
+  .shots figcaption { margin-top: 12px; text-align: center; font-weight: 600; font-size: 15px; }
+  .shots figcaption span { color: var(--accent-ink); font-family: var(--font-display); margin-inline-end: 8px; }
+  .all { margin: 28px 0 0; text-align: center; }
+</style>

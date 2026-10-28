@@ -1,4 +1,5 @@
 import { SERVICES } from "../../src/data/services";
+import { WORK } from "../../src/data/work";
 
 /** كل صفحات الموقع اللي لازم تتختبر. أي خدمة جديدة بتدخل هنا أوتوماتيك. */
 export const PAGES: string[] = [
@@ -9,7 +10,9 @@ export const PAGES: string[] = [
   "/contact/",
   "/privacy/",
   "/terms/",
+  "/work/",
   ...SERVICES.map((s) => `/${s.slug}/`),
+  ...WORK.map((w) => `/work/${w.slug}/`),
 ];
 
 /** أي طلب لبرّه الموقع أثناء الاختبار بيتقفل، عشان الاختبار يبقى ثابت ومايبعتش زيارات وهمية للتحليلات. */

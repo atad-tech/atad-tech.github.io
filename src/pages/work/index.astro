@@ -1,0 +1,80 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageHero from "@/components/PageHero.astro";
+import WorkCard from "@/components/WorkCard.astro";
+import CtaBand from "@/components/CtaBand.astro";
+import Icon from "@/components/Icon.astro";
+import { CONCEPT_NOTE, WORK, workPath } from "@/data/work";
+import { whatsappLink } from "@/config/site";
+import { absolute, href } from "@/lib/url";
+import { breadcrumbs, ORG_ID } from "@/lib/schema";
+
+const crumbs = [{ name: "عتاد", path: "/" }, { name: "أعمالنا", path: "/work/" }];
+const projects = WORK.filter((w) => w.kind === "project");
+const concepts = WORK.filter((w) => w.kind === "concept");
+const collection = {
+  "@type": "CollectionPage",
+  name: "أعمال عتاد ATAD",
+  url: absolute("/work/"),
+  publisher: { "@id": ORG_ID() },
+  mainEntity: {
+    "@type": "ItemList",
+    itemListElement: WORK.map((w, i) => ({ "@type": "ListItem", position: i + 1, url: absolute(workPath(w.slug)), name: w.title })),
+  },
+};
+---
+<BaseLayout
+  title="أعمالنا | تصميم تطبيقات ومواقع من عتاد ATAD"
+  description="شوف شغل عتاد ATAD في تصميم تطبيقات الموبايل: تطبيقات مطاعم وحلويات وتوصيل بشاشات حقيقية وتجربة استخدام كاملة، وابدأ تطبيقك معانا."
+  path="/work/"
+  schema={[collection, breadcrumbs(crumbs)]}
+>
+  <PageHero
+    title="أعمالنا"
+    lead="الشاشات اللي هنا معمولة بنفس المستوى اللي هنعمل بيه تطبيقك: تصميم خاص، تجربة استخدام مدروسة، وكل خطوة في رحلة العميل محسوبة."
+    crumbs={crumbs}
+    eyebrow="تصميم وتطوير التطبيقات"
+  />
+
+  {projects.length > 0 && (
+    <section class="section">
+      <div class="container">
+        <div class="section-head"><p class="eyebrow">مشاريع منفّذة</p><h2>مشاريع اتسلّمت وشغالة</h2></div>
+        <div class="grid grid-3">{projects.map((w) => <WorkCard work={w} />)}</div>
+      </div>
+    </section>
+  )}
+
+  <section class={projects.length > 0 ? "section section--alt" : "section"}>
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">تصاميم مفاهيمية</p>
+        <h2>نماذج تفاعلية لقطاعات مختلفة</h2>
+        <p>{CONCEPT_NOTE}</p>
+      </div>
+      <div class="grid grid-3">{concepts.map((w, i) => <WorkCard work={w} eager={i === 0} />)}</div>
+    </div>
+  </section>
+
+  <section class="section--tight">
+    <div class="container">
+      <div class="card ask">
+        <div>
+          <h2>عايز تشوف نموذج لمجالك؟</h2>
+          <p>قولنا نشاطك، ونوريك تصور مبدئي لتطبيقك أو موقعك قبل ما تدفع أي حاجة.</p>
+        </div>
+        <a class="btn btn--wa btn--lg" href={whatsappLink("أهلًا عتاد، شفت أعمالكم وعايز تصور لتطبيق لنشاطي.")} rel="noopener noreferrer" data-wa="work"><Icon name="whatsapp" size={20} />اطلب تصور لمجالك</a>
+      </div>
+      <p class="back"><a href={href("/mobile-apps/")}>تفاصيل وأسعار برمجة التطبيقات <Icon name="arrow" size={16} /></a></p>
+    </div>
+  </section>
+
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  .ask { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap; padding: 28px; border-inline-start: 4px solid var(--cyan); }
+  .ask h2 { font-size: clamp(20px, 2.4vw, 26px); margin-bottom: 4px; }
+  .back { margin: 18px 0 0; }
+  .back a { display: inline-flex; align-items: center; gap: 6px; color: var(--accent-ink); font-weight: 600; text-decoration: none; }
+</style>

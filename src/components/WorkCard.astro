@@ -1,0 +1,49 @@
+---
+import Icon from "./Icon.astro";
+import { KIND_LABEL, screenSrc, workPath, type Work } from "@/data/work";
+import { href } from "@/lib/url";
+
+interface Props { work: Work; headingLevel?: "h2" | "h3"; eager?: boolean }
+const { work: w, headingLevel = "h3", eager = false } = Astro.props;
+const H = headingLevel;
+const cover = w.screens.find((s) => s.file === w.cover) ?? w.screens[0]!;
+---
+<a class={`wcard tone--${w.tone}`} href={href(workPath(w.slug))}>
+  <div class="wcard__media">
+    <img
+      src={href(screenSrc(w, cover.file, 360))}
+      srcset={`${href(screenSrc(w, cover.file, 360))} 360w, ${href(screenSrc(w, cover.file, 720))} 720w`}
+      sizes="(max-width: 600px) 60vw, 240px"
+      width="360"
+      height={w.h360}
+      alt={cover.alt}
+      loading={eager ? "eager" : "lazy"}
+      decoding="async"
+    />
+  </div>
+  <div class="wcard__body">
+    <p class="tags"><span class={`kind kind--${w.kind}`}>{KIND_LABEL[w.kind]}</span><span>{w.industry}</span><span>{w.screens.length} شاشات</span></p>
+    <H>{w.title}</H>
+    <p>{w.short}</p>
+    <span class="more">شوف الشاشات <Icon name="arrow" size={16} /></span>
+  </div>
+</a>
+
+<style>
+  .wcard { display: flex; flex-direction: column; text-decoration: none; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius-l); overflow: hidden; transition: border-color .15s, transform .15s, box-shadow .15s; }
+  .wcard:hover { border-color: var(--cyan); transform: translateY(-2px); box-shadow: var(--shadow); }
+  .wcard__media { background: var(--tone); padding: 28px 0 0; height: 300px; overflow: hidden; display: flex; justify-content: center; }
+  .wcard__media img { width: 62%; max-width: 240px; filter: drop-shadow(0 18px 30px rgba(0,0,0,.35)); transition: transform .3s; }
+  .wcard:hover .wcard__media img { transform: translateY(-6px); }
+  .tone--charcoal { --tone: radial-gradient(120% 90% at 50% 110%, #3a2a1c, #151515 70%); }
+  .tone--red { --tone: radial-gradient(120% 90% at 50% 110%, #ff5a4f, #b5161d 70%); }
+  .tone--emerald { --tone: radial-gradient(120% 90% at 50% 110%, #2f7d55, #0b3a24 70%); }
+  .tone--navy { --tone: radial-gradient(120% 90% at 50% 110%, #1a3560, #061224 70%); }
+  .wcard__body { padding: 20px 22px 22px; display: flex; flex-direction: column; flex: 1; }
+  .wcard__body p { color: var(--muted); margin: 0; font-size: 15.5px; }
+  .wcard h2, .wcard h3 { font-size: 19px; margin: 0 0 6px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px !important; }
+  .tags span { font-size: 12.5px; font-weight: 600; padding: 3px 10px; border-radius: 99px; background: var(--surface-2); color: var(--muted); border: 1px solid var(--line); }
+  .tags .kind--concept { background: var(--cyan-soft); color: var(--accent-ink); border-color: transparent; }
+  .tags .kind--project { background: #1f8a5b22; color: var(--wa); border-color: transparent; }
+</style>

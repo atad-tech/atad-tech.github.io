@@ -3,6 +3,8 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import Calculator from "@/components/Calculator.astro";
 import Countdown from "@/components/Countdown.astro";
 import ServiceCard from "@/components/ServiceCard.astro";
+import WorkCard from "@/components/WorkCard.astro";
+import { WORK } from "@/data/work";
 import Faq from "@/components/Faq.astro";
 import CtaBand from "@/components/CtaBand.astro";
 import Icon from "@/components/Icon.astro";
@@ -81,7 +83,19 @@ const faq = [
     </div>
   </section>
 
-  <section class="section section--alt">
+  <section class="section section--alt" id="work">
+    <div class="container">
+      <div class="section-head">
+        <p class="eyebrow">من شغلنا</p>
+        <h2>شوف مستوى التصميم قبل ما تبدأ</h2>
+        <p>تصاميم مفاهيمية ونماذج تفاعلية عملناها لمطاعم ومحلات حلويات، بنفس المستوى اللي هنعمل بيه تطبيقك.</p>
+      </div>
+      <div class="grid grid-3">{WORK.slice(0, 3).map((w) => <WorkCard work={w} />)}</div>
+      <p class="all"><a class="btn btn--ghost" href={href("/work/")}>كل الأعمال <Icon name="arrow" size={18} /></a></p>
+    </div>
+  </section>
+
+  <section class="section">
     <div class="container">
       <div class="section-head">
         <p class="eyebrow">وكمان</p>
@@ -104,7 +118,7 @@ const faq = [
     </div>
   </section>
 
-  <section class="section">
+  <section class="section section--alt">
     <div class="container">
       <div class="section-head"><p class="eyebrow">ليه عتاد</p><h2>شريك تقني فاهم شغلك، مش منفّذ وخلاص</h2></div>
       <div class="grid grid-4">

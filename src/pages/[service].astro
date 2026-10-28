@@ -3,6 +3,8 @@ import type { GetStaticPaths } from "astro";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import PageHero from "@/components/PageHero.astro";
 import ServiceCard from "@/components/ServiceCard.astro";
+import WorkCard from "@/components/WorkCard.astro";
+import { workFor } from "@/data/work";
 import Faq from "@/components/Faq.astro";
 import CtaBand from "@/components/CtaBand.astro";
 import Icon from "@/components/Icon.astro";
@@ -24,6 +26,7 @@ const crumbs = [
   { name: s.name, path },
 ];
 const related = s.related.map(serviceBySlug);
+const work = workFor(s.slug).slice(0, 3);
 const waText = `أهلًا عتاد، عايز أعرف تفاصيل وسعر خدمة ${s.name}.`;
 const steps = [
   { t: "نفهم شغلك", d: "مكالمة قصيرة نعرف فيها هدفك وعملاءك، من غير أي التزام." },
@@ -92,6 +95,16 @@ const steps = [
     </div>
   </section>
 
+  {work.length > 0 && (
+    <section class="section section--alt">
+      <div class="container">
+        <div class="section-head"><p class="eyebrow">من شغلنا</p><h2>نماذج من تصميماتنا</h2><p>تصاميم مفاهيمية ونماذج تفاعلية عملناها لقطاعات مختلفة.</p></div>
+        <div class="grid grid-3">{work.map((w) => <WorkCard work={w} />)}</div>
+        <p class="all-work"><a class="btn btn--ghost" href={href("/work/")}>كل الأعمال <Icon name="arrow" size={18} /></a></p>
+      </div>
+    </section>
+  )}
+
   <Faq items={s.faq} title={`أسئلة شائعة عن ${s.name}`} />
 
   {related.length > 0 && (
@@ -126,4 +139,5 @@ const steps = [
   .steps span { color: var(--muted); font-size: 15px; }
   @media (max-width: 860px) { .split { grid-template-columns: 1fr; } .steps { grid-template-columns: 1fr 1fr; } }
   @media (max-width: 520px) { .incl, .steps { grid-template-columns: 1fr; } }
+  .all-work { margin: 28px 0 0; text-align: center; }
 </style>

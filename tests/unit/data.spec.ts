@@ -46,3 +46,27 @@ test("contact and offer config is valid", () => {
   expect(OFFER.percent).toBeLessThan(100);
   for (const url of Object.values(SOCIAL)) expect(url).toMatch(/^https:\/\//);
 });
+
+test("every portfolio item is complete, honest and has its images", async () => {
+  const { WORK } = await import("../../src/data/work");
+  const { existsSync } = await import("node:fs");
+  const slugs = new Set<string>();
+  const serviceSlugs = new Set(SERVICES.map((s) => s.slug));
+  for (const w of WORK) {
+    expect(w.slug, w.slug).toMatch(/^[a-z0-9-]+$/);
+    expect(slugs.has(w.slug), `duplicate ${w.slug}`).toBe(false);
+    slugs.add(w.slug);
+    expect(w.seo.title.length, `${w.slug} title`).toBeLessThanOrEqual(70);
+    expect(w.seo.description.length, `${w.slug} description`).toBeGreaterThanOrEqual(70);
+    expect(w.seo.description.length, `${w.slug} description`).toBeLessThanOrEqual(200);
+    // التصميم المفاهيمي لازم يقول كده صراحةً في الوصف، عشان مايتفهمش إنه شغل لعميل
+    if (w.kind === "concept") expect(w.seo.description, w.slug).toContain("مفاهيمي");
+    expect(w.screens.some((s) => s.file === w.cover), `${w.slug} cover`).toBe(true);
+    for (const s of w.screens) {
+      expect(s.alt.length, `${w.slug}/${s.file} alt`).toBeGreaterThanOrEqual(20);
+      for (const size of [360, 720]) expect(existsSync(`public/work/${w.slug}/${s.file}-${size}.webp`), `${w.slug}/${s.file}-${size}`).toBe(true);
+    }
+    expect(existsSync(`public/work/${w.slug}/og.jpg`), `${w.slug} og`).toBe(true);
+    for (const s of w.services) expect(serviceSlugs.has(s), `${w.slug} → ${s}`).toBe(true);
+  }
+});

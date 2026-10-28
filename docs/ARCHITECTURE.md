@@ -10,11 +10,11 @@ flowchart LR
         Code["الكود<br/>atad-tech/atad-tech.github.io"]
     end
     subgraph CI["GitHub Actions"]
-        Test["فحص + بناء + 229 اختبار"]
+        Test["فحص + بناء + 268 اختبار"]
         Scan["CodeQL + npm audit<br/>+ Dependabot"]
     end
     subgraph Host["GitHub Pages (HTTPS)"]
-        Site["atad-tech.github.io<br/>20 صفحة HTML ثابتة"]
+        Site["atad-tech.github.io<br/>24 صفحة HTML ثابتة"]
         Old["mostafaer.github.io/atad<br/>تحويل للعنوان الجديد"]
     end
     Visitor(["الزائر"])
@@ -159,6 +159,7 @@ npm run build && npm test
 | عايز | تعمل إيه |
 | --- | --- |
 | خدمة جديدة | عنصر جديد في `SERVICES` في `src/data/services.ts`. الصفحة والقوائم والـ sitemap والاختبارات بيتحدثوا لوحدهم |
+| عمل جديد في أعمالنا | عنصر في `WORK` في `src/data/work.ts` + الصور في `public/work/<slug>/`. لو مشروع لعميل: `kind: "project"` وبعد موافقته |
 | تغيير سعر | `src/config/pricing.ts` (الاختبارات بتتأكد إن صفحة الخدمة لسه متطابقة) |
 | تغيير العرض أو تاريخه | `OFFER` في `src/config/site.ts` |
 | تفعيل Google Ads أو Pixel | `TRACKING` في `src/config/site.ts`. الـ CSP بتسمح بمصادرهم أوتوماتيك |

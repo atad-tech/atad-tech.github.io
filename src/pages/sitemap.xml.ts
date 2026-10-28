@@ -1,5 +1,6 @@
 import type { APIRoute } from "astro";
 import { SERVICES } from "@/data/services";
+import { WORK, workPath } from "@/data/work";
 import { absolute, servicePath } from "@/lib/url";
 
 // بيتولد وقت البناء، فأي خدمة جديدة بتدخل الـ sitemap لوحدها
@@ -8,6 +9,8 @@ const pages: { path: string; priority: string }[] = [
   { path: "/services/", priority: "0.9" },
   ...SERVICES.map((s) => ({ path: servicePath(s.slug), priority: s.featured ? "0.9" : "0.8" })),
   { path: "/website-cost/", priority: "0.9" },
+  { path: "/work/", priority: "0.8" },
+  ...WORK.map((w) => ({ path: workPath(w.slug), priority: "0.7" })),
   { path: "/about/", priority: "0.6" },
   { path: "/contact/", priority: "0.6" },
   { path: "/privacy/", priority: "0.2" },

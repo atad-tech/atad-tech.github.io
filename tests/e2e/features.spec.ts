@@ -139,7 +139,7 @@ test.describe("security", () => {
     const robots = await request.get("/robots.txt");
     expect(await robots.text()).toContain("Sitemap: https://atad-tech.github.io/sitemap.xml");
     const sm = await request.get("/sitemap.xml");
-    expect((await sm.text()).match(/<loc>/g)?.length).toBeGreaterThanOrEqual(19);
+    expect((await sm.text()).match(/<loc>/g)?.length).toBeGreaterThanOrEqual(23);
   });
 
   test("no third-party request is made on page load except analytics", async ({ page }) => {

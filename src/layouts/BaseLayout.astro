@@ -17,10 +17,13 @@ interface Props {
   ogType?: "website" | "article";
   schema?: Record<string, unknown>[];
   noindex?: boolean;
+  /** صورة المشاركة (1200×630)، الافتراضي صورة عتاد */
+  image?: { path: string; alt: string };
 }
-const { title, description, path, ogType = "website", schema = [], noindex = false } = Astro.props;
+const { title, description, path, ogType = "website", schema = [], noindex = false, image } = Astro.props;
 const canonical = absolute(path);
-const ogImage = absolute("/og-image.png");
+const ogImage = absolute(image?.path ?? "/og-image.png");
+const ogAlt = image?.alt ?? "عتاد ATAD Software Engineering";
 // آخر ثانية في يوم نهاية العرض بتوقيت القاهرة
 const offerEnd = OFFER.percent > 0 ? `${OFFER.endsOn}T23:59:59+02:00` : undefined;
 ---
@@ -58,7 +61,7 @@ const offerEnd = OFFER.percent > 0 ? `${OFFER.endsOn}T23:59:59+02:00` : undefine
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="عتاد ATAD Software Engineering" />
+    <meta property="og:image:alt" content={ogAlt} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
