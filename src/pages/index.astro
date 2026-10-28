@@ -5,6 +5,7 @@ import Countdown from "@/components/Countdown.astro";
 import ServiceCard from "@/components/ServiceCard.astro";
 import WorkCard from "@/components/WorkCard.astro";
 import { workBySlug } from "@/data/work";
+import { guideBySlug, guidePath } from "@/data/guides";
 import Faq from "@/components/Faq.astro";
 import CtaBand from "@/components/CtaBand.astro";
 import Icon from "@/components/Icon.astro";
@@ -124,6 +125,22 @@ const faq = [
       <div class="grid grid-4">
         {why.map((w) => <div class="card"><span class="icon-badge"><Icon name="check" /></span><h3>{w.t}</h3><p>{w.d}</p></div>)}
       </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head"><p class="eyebrow">قبل ما تبدأ</p><h2>أدلة الأسعار بالتفصيل</h2><p>أسعار حقيقية محسوبة بنفس الحاسبة، من غير لف ودوران.</p></div>
+      <div class="grid grid-3">
+        {["app-development-cost-egypt", "ecommerce-cost-egypt", "website-or-app"].map(guideBySlug).filter((g) => g !== undefined).map((g) => (
+          <a class="card card--link" href={href(guidePath(g.slug))}>
+            <h3>{g.title}</h3>
+            <p>{g.lead}</p>
+            <span class="more">اقرأ الدليل <Icon name="arrow" size={16} /></span>
+          </a>
+        ))}
+      </div>
+      <p class="all"><a class="btn btn--ghost" href={href("/guides/")}>كل الأدلة <Icon name="arrow" size={18} /></a></p>
     </div>
   </section>
 
