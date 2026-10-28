@@ -10,11 +10,11 @@ flowchart LR
         Code["الكود<br/>atad-tech/atad-tech.github.io"]
     end
     subgraph CI["GitHub Actions"]
-        Test["فحص + بناء + 268 اختبار"]
+        Test["فحص + بناء + 288 اختبار"]
         Scan["CodeQL + npm audit<br/>+ Dependabot"]
     end
     subgraph Host["GitHub Pages (HTTPS)"]
-        Site["atad-tech.github.io<br/>24 صفحة HTML ثابتة"]
+        Site["atad-tech.github.io<br/>26 صفحة HTML ثابتة"]
         Old["mostafaer.github.io/atad<br/>تحويل للعنوان الجديد"]
     end
     Visitor(["الزائر"])

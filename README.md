@@ -5,7 +5,7 @@
 
 **https://atad-tech.github.io**
 
-موقع ثابت مبني بـ [Astro](https://astro.build) وTypeScript (strictest). بينزل على GitHub Pages أوتوماتيك، بس بعد ما يعدّي على 268 اختبار وفحص أمني.
+موقع ثابت مبني بـ [Astro](https://astro.build) وTypeScript (strictest). بينزل على GitHub Pages أوتوماتيك، بس بعد ما يعدّي على 288 اختبار وفحص أمني.
 
 - 📐 [هيكل الموقع بالرسومات](docs/ARCHITECTURE.md)
 - 🔒 [نموذج الأمان والتهديدات](docs/SECURITY-MODEL.md)

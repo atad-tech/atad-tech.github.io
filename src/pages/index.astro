@@ -4,7 +4,7 @@ import Calculator from "@/components/Calculator.astro";
 import Countdown from "@/components/Countdown.astro";
 import ServiceCard from "@/components/ServiceCard.astro";
 import WorkCard from "@/components/WorkCard.astro";
-import { WORK } from "@/data/work";
+import { workBySlug } from "@/data/work";
 import Faq from "@/components/Faq.astro";
 import CtaBand from "@/components/CtaBand.astro";
 import Icon from "@/components/Icon.astro";
@@ -88,9 +88,9 @@ const faq = [
       <div class="section-head">
         <p class="eyebrow">من شغلنا</p>
         <h2>شوف مستوى التصميم قبل ما تبدأ</h2>
-        <p>تصاميم مفاهيمية ونماذج تفاعلية عملناها لمطاعم ومحلات حلويات، بنفس المستوى اللي هنعمل بيه تطبيقك.</p>
+        <p>تصاميم مفاهيمية ونماذج تفاعلية عملناها لمطاعم بيتزا ومشويات ومحلات حلويات، بنفس المستوى اللي هنعمل بيه تطبيقك.</p>
       </div>
-      <div class="grid grid-3">{WORK.slice(0, 3).map((w) => <WorkCard work={w} />)}</div>
+      <div class="grid grid-3">{["pizza-app", "grill-restaurant-app", "sweets-app"].map(workBySlug).filter((w) => w !== undefined).map((w) => <WorkCard work={w} />)}</div>
       <p class="all"><a class="btn btn--ghost" href={href("/work/")}>كل الأعمال <Icon name="arrow" size={18} /></a></p>
     </div>
   </section>
