@@ -70,3 +70,25 @@ test("every portfolio item is complete, honest and has its images", async () => 
     for (const s of w.services) expect(serviceSlugs.has(s), `${w.slug} → ${s}`).toBe(true);
   }
 });
+
+test("guides are complete and their prices match the calculator", async () => {
+  const { GUIDES } = await import("../../src/data/guides");
+  const { priceIn } = await import("../../src/config/pricing");
+  // نفس معادلة الحاسبة: 50,000 جنيه × 5 ÷ 13 = 19,231 ← 19,000 ريال
+  expect(priceIn(PROJECT_TYPES.app.price, "sa")).toEqual([19000, 38000]);
+  expect(priceIn(PROJECT_TYPES.app.price, "eg")).toEqual(PROJECT_TYPES.app.price);
+  const slugs = new Set<string>();
+  for (const g of GUIDES) {
+    expect(g.slug).toMatch(/^[a-z0-9-]+$/);
+    expect(slugs.has(g.slug)).toBe(false);
+    slugs.add(g.slug);
+    expect(g.seo.title.length, `${g.slug} title`).toBeLessThanOrEqual(75);
+    expect(g.seo.description.length, `${g.slug} description`).toBeGreaterThanOrEqual(70);
+    expect(g.seo.description.length, `${g.slug} description`).toBeLessThanOrEqual(200);
+    expect(g.sections.length, g.slug).toBeGreaterThanOrEqual(3);
+    expect(g.faq.length, g.slug).toBeGreaterThanOrEqual(3);
+    expect(new Set(g.sections.map((s) => s.id)).size, `${g.slug} section ids`).toBe(g.sections.length);
+    expect(g.updated >= g.published, g.slug).toBe(true);
+    expect(g.seo.title + g.title, `${g.slug} keyword in title`).toContain(g.keyword.split(" ")[0]!);
+  }
+});

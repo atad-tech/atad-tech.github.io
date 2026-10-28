@@ -7,7 +7,7 @@ import Icon from "@/components/Icon.astro";
 import JsonLd from "@/components/JsonLd.astro";
 import { OFFER, SITE, TRACKING, whatsappLink } from "@/config/site";
 import { absolute, href } from "@/lib/url";
-import { organization, website } from "@/lib/schema";
+import { founder, organization, website } from "@/lib/schema";
 
 interface Props {
   title: string;
@@ -68,7 +68,7 @@ const offerEnd = OFFER.percent > 0 ? `${OFFER.endsOn}T23:59:59+02:00` : undefine
     <meta name="twitter:image" content={ogImage} />
 
 
-    <JsonLd data={[organization(), website(), ...schema]} />
+    <JsonLd data={[organization(), website(), founder(), ...schema]} />
 
     {TRACKING.ahrefsKey && <script is:inline async src="https://analytics.ahrefs.com/analytics.js" data-key={TRACKING.ahrefsKey}></script>}
   </head>

@@ -5,6 +5,7 @@ import PageHero from "@/components/PageHero.astro";
 import ServiceCard from "@/components/ServiceCard.astro";
 import WorkCard from "@/components/WorkCard.astro";
 import { workFor } from "@/data/work";
+import { GUIDES, guidePath } from "@/data/guides";
 import Faq from "@/components/Faq.astro";
 import CtaBand from "@/components/CtaBand.astro";
 import Icon from "@/components/Icon.astro";
@@ -27,6 +28,7 @@ const crumbs = [
 ];
 const related = s.related.map(serviceBySlug);
 const work = workFor(s.slug).slice(0, 3);
+const guides = GUIDES.filter((g) => g.related.some((r) => r.path === path));
 const waText = `أهلًا عتاد، عايز أعرف تفاصيل وسعر خدمة ${s.name}.`;
 const steps = [
   { t: "نفهم شغلك", d: "مكالمة قصيرة نعرف فيها هدفك وعملاءك، من غير أي التزام." },
@@ -101,6 +103,23 @@ const steps = [
         <div class="section-head"><p class="eyebrow">من شغلنا</p><h2>نماذج من تصميماتنا</h2><p>تصاميم مفاهيمية ونماذج تفاعلية عملناها لقطاعات مختلفة.</p></div>
         <div class="grid grid-3">{work.map((w) => <WorkCard work={w} />)}</div>
         <p class="all-work"><a class="btn btn--ghost" href={href("/work/")}>كل الأعمال <Icon name="arrow" size={18} /></a></p>
+      </div>
+    </section>
+  )}
+
+  {guides.length > 0 && (
+    <section class="section--tight">
+      <div class="container">
+        <div class="section-head"><p class="eyebrow">قبل ما تقرر</p><h2>أدلة هتفيدك</h2></div>
+        <div class="grid grid-3">
+          {guides.map((g) => (
+            <a class="card card--link" href={href(guidePath(g.slug))}>
+              <h3>{g.title}</h3>
+              <p>{g.lead}</p>
+              <span class="more">اقرأ الدليل <Icon name="arrow" size={16} /></span>
+            </a>
+          ))}
+        </div>
       </div>
     </section>
   )}

@@ -38,3 +38,20 @@ export const MARKETS = {
 
 export const fmt = (n: number): string => n.toLocaleString("en-US");
 export const fmtRange = ([a, b]: Range): string => `${fmt(a)} – ${fmt(b)}`;
+
+/** نفس تقريب الحاسبة بالظبط، عشان أي رقم في المقالات يطابق الحاسبة */
+export const roundPrice = (n: number): number => {
+  const st = n >= 10000 ? 1000 : n >= 1000 ? 100 : 10;
+  return Math.round(n / st) * st;
+};
+
+export type Market = keyof typeof MARKETS;
+
+/** يحوّل نطاق بالجنيه لسعر سوق معيّن (بنفس معادلة الحاسبة): جنيه × التصميم × mult × rate */
+export const priceIn = (range: Range, market: Market = "eg", design = 1): Range => {
+  const m = MARKETS[market];
+  return [roundPrice(range[0] * design * m.mult * m.rate), roundPrice(range[1] * design * m.mult * m.rate)];
+};
+
+/** مجموع نطاقات (مشروع + مميزات) */
+export const sumRanges = (...rs: Range[]): Range => [rs.reduce((a, r) => a + r[0], 0), rs.reduce((a, r) => a + r[1], 0)];

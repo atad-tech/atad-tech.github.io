@@ -1,0 +1,22 @@
+---
+/**
+ * بيحوّل نص بسيط لـ HTML آمن: **غامق** و [نص](/مسار/) لروابط داخلية بس.
+ * مفيش set:html، فأي نص بيتعرض كنص عادي ومفيش احتمال حقن.
+ */
+import { href } from "@/lib/url";
+
+interface Props { text: string }
+const { text } = Astro.props;
+type Part = { t: "text" | "b"; v: string } | { t: "a"; v: string; to: string };
+const parts: Part[] = [];
+const re = /\*\*([^*]+)\*\*|\[([^\]]+)\]\((\/[^)\s]*)\)/g;
+let last = 0;
+for (const m of text.matchAll(re)) {
+  if (m.index > last) parts.push({ t: "text", v: text.slice(last, m.index) });
+  if (m[1] !== undefined) parts.push({ t: "b", v: m[1] });
+  else parts.push({ t: "a", v: m[2]!, to: m[3]! });
+  last = m.index + m[0].length;
+}
+if (last < text.length) parts.push({ t: "text", v: text.slice(last) });
+---
+{parts.map((p) => (p.t === "b" ? <strong>{p.v}</strong> : p.t === "a" ? <a href={href(p.to)}>{p.v}</a> : p.v))}

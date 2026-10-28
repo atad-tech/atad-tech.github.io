@@ -1,0 +1,149 @@
+---
+import type { GetStaticPaths } from "astro";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageHero from "@/components/PageHero.astro";
+import RichText from "@/components/RichText.astro";
+import Faq from "@/components/Faq.astro";
+import CtaBand from "@/components/CtaBand.astro";
+import Icon from "@/components/Icon.astro";
+import { GUIDES, guidePath, type Guide } from "@/data/guides";
+import { href } from "@/lib/url";
+import { article, breadcrumbs, faqPage, FOUNDER } from "@/lib/schema";
+
+export const getStaticPaths = (() => GUIDES.map((guide) => ({ params: { slug: guide.slug }, props: { guide } }))) satisfies GetStaticPaths;
+
+interface Props { guide: Guide }
+const { guide: g } = Astro.props;
+const path = guidePath(g.slug);
+const crumbs = [
+  { name: "عتاد", path: "/" },
+  { name: "أدلة ومقالات", path: "/guides/" },
+  { name: g.title, path },
+];
+const date = (d: string) => new Date(`${d}T12:00:00+02:00`).toLocaleDateString("ar-EG", { day: "numeric", month: "long", year: "numeric", timeZone: "Africa/Cairo" });
+const plain = (t: string) => t.replace(/\*\*|\[|\]\([^)]*\)/g, "");
+const words = [g.answer, ...g.sections.flatMap((s) => s.body.flatMap((b) => ("p" in b ? [b.p] : "note" in b ? [b.note] : "ul" in b ? b.ul : "ol" in b ? b.ol : b.table.rows.flat())))]
+  .join(" ").split(/\s+/).length;
+const minutes = Math.max(2, Math.round(words / 150));
+const readTime = minutes === 2 ? "دقيقتين" : `${minutes} دقايق`;
+const others = GUIDES.filter((o) => o.slug !== g.slug);
+---
+<BaseLayout
+  title={g.seo.title}
+  description={g.seo.description}
+  path={path}
+  ogType="article"
+  schema={[
+    article({ title: g.title, description: g.seo.description, path, image: "/og-image.png", published: g.published, updated: g.updated, keyword: g.keyword }),
+    breadcrumbs(crumbs),
+    faqPage(g.faq.map((f) => ({ q: f.q, a: plain(f.a) }))),
+  ]}
+>
+  <PageHero title={g.title} lead={g.lead} crumbs={crumbs} eyebrow="دليل عتاد">
+    <p class="meta">
+      <span>بقلم <a href={href("/about/")}>{FOUNDER.name}</a></span>
+      <span>آخر تحديث: <time datetime={g.updated}>{date(g.updated)}</time></span>
+      <span>{readTime} قراءة</span>
+    </p>
+  </PageHero>
+
+  <div class="container wrap">
+    <article class="guide">
+      <div class="answer card"><p><strong>الإجابة المختصرة: </strong><RichText text={g.answer} /></p></div>
+
+      <nav class="toc card" aria-labelledby="toc-h">
+        <h2 id="toc-h">محتوى الدليل</h2>
+        <ol>{g.sections.map((s) => <li><a href={`#${s.id}`}>{s.h2}</a></li>)}</ol>
+      </nav>
+
+      {g.sections.map((s) => (
+        <section id={s.id} aria-labelledby={`${s.id}-h`}>
+          <h2 id={`${s.id}-h`}>{s.h2}</h2>
+          {s.body.map((b) =>
+            "p" in b ? <p><RichText text={b.p} /></p>
+            : "note" in b ? <p class="note"><Icon name="check" size={18} /><span><RichText text={b.note} /></span></p>
+            : "ul" in b ? <ul class="list">{b.ul.map((i) => <li><RichText text={i} /></li>)}</ul>
+            : "ol" in b ? <ol class="list">{b.ol.map((i) => <li><RichText text={i} /></li>)}</ol>
+            : (
+              <div class="table-wrap">
+                <table>
+                  {b.table.caption && <caption>{b.table.caption}</caption>}
+                  <thead><tr>{b.table.head.map((h) => <th scope="col">{h}</th>)}</tr></thead>
+                  <tbody>{b.table.rows.map((r) => <tr>{r.map((c, i) => (i === 0 ? <th scope="row">{c}</th> : <td class={/\d/.test(c) ? "num" : undefined}>{c}</td>))}</tr>)}</tbody>
+                </table>
+              </div>
+            ),
+          )}
+        </section>
+      ))}
+
+      <aside class="calc-cta card" aria-label="احسب تكلفة مشروعك">
+        <div><h2>احسب تكلفة مشروعك بالظبط</h2><p>اختار نوع المشروع والمميزات وبلدك، وخد السعر في 30 ثانية.</p></div>
+        <a class="btn btn--primary btn--lg" href={href("/#calc")}>افتح الحاسبة</a>
+      </aside>
+    </article>
+
+    <aside class="side" aria-label="روابط ذات صلة">
+      <div class="card">
+        <h2>اقرأ كمان</h2>
+        <ul>{g.related.map((r) => <li><a href={href(r.path)}><Icon name="arrow" size={16} />{r.label}</a></li>)}</ul>
+      </div>
+    </aside>
+  </div>
+
+  <Faq items={g.faq} title={`أسئلة شائعة عن ${g.keyword}`} />
+
+  {others.length > 0 && (
+    <section class="section section--alt">
+      <div class="container">
+        <div class="section-head"><p class="eyebrow">أدلة تانية</p><h2>كمّل قراءة</h2></div>
+        <div class="grid grid-3">
+          {others.map((o) => (
+            <a class="card card--link" href={href(guidePath(o.slug))}>
+              <h3>{o.title}</h3>
+              <p>{o.lead}</p>
+              <span class="more">اقرأ الدليل <Icon name="arrow" size={16} /></span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  .meta { display: flex; flex-wrap: wrap; gap: 6px 22px; color: #9fb0c7; font-size: 14.5px; margin: 0; }
+  .meta a { color: #fff; }
+  .wrap { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 40px; padding-block: clamp(32px, 5vw, 56px); align-items: start; }
+  .guide { max-width: 780px; }
+  .guide section { margin-top: 44px; scroll-margin-top: calc(var(--header-h) + 16px); }
+  .guide h2 { font-size: clamp(22px, 2.6vw, 28px); }
+  .guide p, .guide li { font-size: 17px; }
+  .guide p { color: var(--ink); }
+  .answer { border-inline-start: 4px solid var(--cyan); padding: 20px 22px; }
+  .answer p { margin: 0; color: var(--ink); font-size: 17.5px; }
+  .toc { margin-top: 22px; padding: 18px 22px; }
+  .toc h2 { font-size: 17px; margin-bottom: 8px; }
+  .toc ol { margin: 0; padding-inline-start: 20px; display: grid; gap: 4px; }
+  .toc a { color: var(--accent-ink); text-decoration: none; font-size: 15.5px; }
+  .toc a:hover { text-decoration: underline; }
+  .list { padding-inline-start: 22px; display: grid; gap: 8px; margin: 0 0 1em; }
+  .note { display: flex; gap: 10px; align-items: flex-start; padding: 14px 18px; border-radius: var(--radius); background: var(--cyan-soft); }
+  .note :global(svg) { color: var(--accent-ink); flex: none; margin-top: 5px; }
+  .table-wrap { margin: 0 0 1em; }
+  caption { caption-side: top; text-align: start; padding: 12px 16px 0; color: var(--muted); font-size: 14px; }
+  tbody th { font-weight: 600; background: transparent; font-size: 15.5px; }
+  .guide a { color: var(--accent-ink); }
+  .calc-cta { margin-top: 44px; display: flex; gap: 18px; align-items: center; justify-content: space-between; flex-wrap: wrap; padding: 24px; border-top: 4px solid var(--cyan); }
+  .calc-cta h2 { font-size: 21px; margin-bottom: 4px; }
+  .calc-cta p { margin: 0; color: var(--muted); }
+  .side { position: sticky; top: calc(var(--header-h) + 20px); }
+  .side h2 { font-size: 17px; }
+  .side ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+  .side a { display: flex; gap: 8px; align-items: flex-start; text-decoration: none; font-size: 15px; line-height: 1.6; }
+  .side a:hover { color: var(--accent-ink); }
+  .side :global(svg) { color: var(--accent-ink); flex: none; margin-top: 4px; }
+  @media (max-width: 960px) { .wrap { grid-template-columns: minmax(0, 1fr); } .side { position: static; } }
+</style>

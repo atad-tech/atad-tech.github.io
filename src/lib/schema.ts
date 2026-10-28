@@ -4,6 +4,32 @@ import { absolute } from "./url";
 
 export const ORG_ID = () => `${absolute("/")}#business`;
 export const SITE_ID = () => `${absolute("/")}#website`;
+export const FOUNDER_ID = () => `${absolute("/about/")}#founder`;
+
+/** مؤسس عتاد، بيظهر كمؤلف للمقالات (E-E-A-T) */
+export const FOUNDER = { name: "م. مصطفى محمد", alternateName: "Mostafa Mohamed", jobTitle: "مؤسس عتاد ATAD ومهندس برمجيات" } as const;
+
+export function founder() {
+  return { "@type": "Person", "@id": FOUNDER_ID(), name: FOUNDER.name, alternateName: FOUNDER.alternateName, jobTitle: FOUNDER.jobTitle, url: absolute("/about/"), worksFor: { "@id": ORG_ID() } };
+}
+
+export function article(a: { title: string; description: string; path: string; image: string; published: string; updated: string; keyword: string }) {
+  return {
+    "@type": "Article",
+    "@id": `${absolute(a.path)}#article`,
+    headline: a.title,
+    description: a.description,
+    url: absolute(a.path),
+    mainEntityOfPage: absolute(a.path),
+    image: absolute(a.image),
+    datePublished: a.published,
+    dateModified: a.updated,
+    inLanguage: "ar",
+    keywords: a.keyword,
+    author: { "@id": FOUNDER_ID() },
+    publisher: { "@id": ORG_ID() },
+  };
+}
 
 export function organization() {
   return {
@@ -25,6 +51,7 @@ export function organization() {
       url: `https://wa.me/${CONTACT.whatsapp}`,
     },
     sameAs: [SOCIAL.facebook, SOCIAL.instagram],
+    founder: { "@id": FOUNDER_ID() },
   };
 }
 

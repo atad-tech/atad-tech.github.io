@@ -44,7 +44,7 @@ flowchart TD
     L4["④ حماية الروابط والإطارات<br/>noopener noreferrer · Referrer-Policy · ضد Clickjacking"] --> L5
     L5["⑤ صفر طرف تالت تقريبًا<br/>خطوط مستضافة محليًا · Ahrefs بس"] --> L6
     L6["⑥ سلسلة توريد آمنة<br/>npm ci --ignore-scripts · npm audit · Actions مثبتة بـ SHA"] --> L7
-    L7["⑦ مراقبة مستمرة<br/>CodeQL أسبوعي · Dependabot · 288 اختبار قبل كل نشر"] --> OK["✅ الموقع"]
+    L7["⑦ مراقبة مستمرة<br/>CodeQL أسبوعي · Dependabot · 339 اختبار قبل كل نشر"] --> OK["✅ الموقع"]
 ```
 
 ## 3. التهديدات واتعمل إيه لكل واحد

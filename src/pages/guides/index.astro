@@ -1,0 +1,59 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PageHero from "@/components/PageHero.astro";
+import CtaBand from "@/components/CtaBand.astro";
+import Icon from "@/components/Icon.astro";
+import { GUIDES, guidePath } from "@/data/guides";
+import { absolute, href } from "@/lib/url";
+import { breadcrumbs, ORG_ID } from "@/lib/schema";
+
+const crumbs = [{ name: "عتاد", path: "/" }, { name: "أدلة ومقالات", path: "/guides/" }];
+const collection = {
+  "@type": "CollectionPage",
+  name: "أدلة عتاد ATAD",
+  url: absolute("/guides/"),
+  publisher: { "@id": ORG_ID() },
+  mainEntity: {
+    "@type": "ItemList",
+    itemListElement: GUIDES.map((g, i) => ({ "@type": "ListItem", position: i + 1, url: absolute(guidePath(g.slug)), name: g.title })),
+  },
+};
+---
+<BaseLayout
+  title="أدلة ومقالات عن تكلفة وتصميم التطبيقات والمواقع | عتاد ATAD"
+  description="أدلة عملية بالعربي عن تكلفة تصميم التطبيقات والمواقع في مصر والسعودية، تصميم تطبيقات المطاعم، وإزاي تختار شركة برمجة. أسعار حقيقية من غير لف ودوران."
+  path="/guides/"
+  schema={[collection, breadcrumbs(crumbs)]}
+>
+  <PageHero
+    title="أدلة ومقالات"
+    lead="كل اللي محتاج تعرفه قبل ما تبدأ تطبيقك أو موقعك: الأسعار الحقيقية، المميزات اللي بتفرق، وإزاي تختار الفريق الصح."
+    crumbs={crumbs}
+    eyebrow="دليل عتاد"
+  />
+  <section class="section">
+    <div class="container">
+      <div class="grid grid-2">
+        {GUIDES.map((g) => (
+          <a class="card card--link" href={href(guidePath(g.slug))}>
+            <span class="icon-badge"><Icon name="check" /></span>
+            <h2 class="t">{g.title}</h2>
+            <p>{g.lead}</p>
+            <span class="more">اقرأ الدليل <Icon name="arrow" size={16} /></span>
+          </a>
+        ))}
+        <a class="card card--link" href={href("/website-cost/")}>
+          <span class="icon-badge"><Icon name="check" /></span>
+          <h2 class="t">تكلفة تصميم موقع إلكتروني في مصر 2026</h2>
+          <p>أسعار المواقع التعريفية والمتاجر وأنظمة الإدارة، والمدة، وإيه اللي بيغيّر السعر.</p>
+          <span class="more">اقرأ الدليل <Icon name="arrow" size={16} /></span>
+        </a>
+      </div>
+    </div>
+  </section>
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  .t { font-size: 20px; margin-bottom: 6px; }
+</style>
