@@ -51,6 +51,7 @@ const offerEnd = OFFER.percent > 0 ? `${OFFER.endsOn}T23:59:59+02:00` : undefine
     <link rel="apple-touch-icon" href={href("/mark.png")} />
     <link rel="sitemap" href={href("/sitemap.xml")} />
     {TRACKING.ahrefsVerification && <meta name="ahrefs-site-verification" content={TRACKING.ahrefsVerification} />}
+    {TRACKING.bingVerification && <meta name="msvalidate.01" content={TRACKING.bingVerification} />}
 
     <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={SITE.name} />

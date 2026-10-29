@@ -38,6 +38,8 @@ export const OFFER = {
 export const TRACKING = {
   ahrefsKey: "iZejlHC0HsEf+FW9J866cw",
   ahrefsVerification: "9039b1263a87d7bfafbfb622a963b08af9e36fb7dcda519870634e51393c3979",
+  /** Bing Webmaster Tools (msvalidate.01) */
+  bingVerification: "E9743385D12BF672AB134C2D7C712339",
   googleAdsId: "",
   googleAdsLabel: "",
   metaPixelId: "",
