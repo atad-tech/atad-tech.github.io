@@ -1,0 +1,34 @@
+---
+/**
+ * خلفية فضاء: كانفاس نجوم وشبكة وشهب + سدم ضوئية بالـ CSS.
+ * حطه كأول عنصر جوه أي سكشن dark عليه position: relative.
+ */
+interface Props { dense?: boolean; planet?: boolean }
+const { dense = false, planet = false } = Astro.props;
+---
+<div class="space" aria-hidden="true">
+  <span class="nebula n1"></span>
+  <span class="nebula n2"></span>
+  {planet && <span class="planet"><span class="ring"></span></span>}
+  <canvas data-space={dense ? "dense" : "normal"}></canvas>
+</div>
+
+<script>
+  import "@/scripts/space";
+</script>
+
+<style>
+  .space { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+  canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .nebula { position: absolute; border-radius: 50%; filter: blur(60px); opacity: .55; animation: drift 22s ease-in-out infinite alternate; }
+  .n1 { width: 520px; height: 520px; inset-inline-end: -140px; top: -180px; background: radial-gradient(circle, rgba(18,194,233,.45), transparent 65%); }
+  .n2 { width: 460px; height: 460px; inset-inline-start: -160px; bottom: -200px; background: radial-gradient(circle, rgba(124,58,237,.38), transparent 65%); animation-duration: 28s; animation-direction: alternate-reverse; }
+  .planet { position: absolute; width: 230px; height: 230px; inset-inline-start: -70px; bottom: 6%; border-radius: 50%;
+    background: radial-gradient(circle at 32% 30%, #5be4ff 0, #1279b8 28%, #0b2a5a 62%, #050d1d 100%);
+    box-shadow: 0 0 60px rgba(18,194,233,.35), inset -24px -28px 60px rgba(0,0,0,.6); opacity: .9; animation: float 9s ease-in-out infinite; }
+  .ring { position: absolute; inset: 42% -42%; border-radius: 50%; border: 2px solid rgba(160,236,255,.45); box-shadow: 0 0 18px rgba(18,194,233,.4); transform: rotate(-18deg); }
+  @keyframes drift { to { transform: translate3d(40px, 30px, 0) scale(1.12); } }
+  @keyframes float { 50% { transform: translateY(-16px); } }
+  @media (max-width: 960px) { .planet { width: 140px; height: 140px; top: auto; bottom: 6%; inset-inline-start: -30px; opacity: .55; } }
+  @media (prefers-reduced-motion: reduce) { .nebula, .planet { animation: none; } }
+</style>

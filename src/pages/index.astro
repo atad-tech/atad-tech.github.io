@@ -7,6 +7,8 @@ import WorkCard from "@/components/WorkCard.astro";
 import { workBySlug } from "@/data/work";
 import { guideBySlug, guidePath } from "@/data/guides";
 import HowYouPay from "@/components/HowYouPay.astro";
+import SpaceBg from "@/components/SpaceBg.astro";
+import TechOrbit from "@/components/TechOrbit.astro";
 import Faq from "@/components/Faq.astro";
 import CtaBand from "@/components/CtaBand.astro";
 import Icon from "@/components/Icon.astro";
@@ -39,6 +41,7 @@ const faq = [
   schema={[faqPage(faq)]}
 >
   <section class="hero dark">
+    <SpaceBg planet />
     <div class="container hero__grid">
       <div class="hero__copy">
         <p class="eyebrow">عتاد للبرمجيات · مصر والخليج</p>
@@ -73,6 +76,8 @@ const faq = [
       </div>
     </section>
   )}
+
+  <TechOrbit />
 
   <section class="section" id="services">
     <div class="container">
@@ -152,11 +157,13 @@ const faq = [
 </BaseLayout>
 
 <style>
-  .hero { position: relative; overflow: hidden; padding-block: clamp(36px, 5vw, 64px) clamp(56px, 7vw, 88px); }
-  .hero::after { content: ""; position: absolute; inset-inline-start: -120px; bottom: -160px; width: 420px; height: 420px; background: conic-gradient(from 210deg, transparent 0 60%, rgba(18,194,233,.22) 60% 75%, transparent 75%); clip-path: polygon(50% 0, 100% 100%, 0 100%); pointer-events: none; }
+  .hero { position: relative; overflow: hidden; padding-block: clamp(36px, 5vw, 64px) clamp(56px, 7vw, 88px); background: radial-gradient(120% 90% at 80% 0%, #10305c 0%, #0a1b33 45%, #050d1d 100%); }
   .hero__grid { display: grid; grid-template-columns: 1fr 1.05fr; gap: 48px; align-items: start; position: relative; z-index: 1; }
   .hero__copy { padding-top: 12px; }
-  .hero h1 span { color: var(--cyan); }
+  .hero h1 span { background: linear-gradient(90deg, #12c2e9, #7dd3fc, #a78bfa, #12c2e9); background-size: 220% auto; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shine 7s linear infinite; text-shadow: none; }
+  .hero h1 { text-shadow: 0 0 40px rgba(18,194,233,.25); }
+  @keyframes shine { to { background-position: 220% center; } }
+  @media (prefers-reduced-motion: reduce) { .hero h1 span { animation: none; } }
   .lead { font-size: 18.5px; max-width: 46ch; margin-bottom: 26px; }
   .proof { list-style: none; padding: 0; margin: 34px 0 0; display: flex; gap: 32px; flex-wrap: wrap; }
   .proof b { display: block; font: 700 26px/1.1 var(--font-display); color: var(--cyan); }

@@ -1,0 +1,256 @@
+---
+/**
+ * "ترسانة عتاد": مجرة تقنيات بتلف حوالين نواة عتاد + تيرمنال بيكتب حلول حقيقية
+ * بـ Node.js وPython وJava وReact. الأسماء نص بس (من غير لوجوهات الشركات).
+ */
+import SpaceBg from "./SpaceBg.astro";
+
+const rings = [
+  { cls: "r1", items: ["React", "Node.js", "Python"] },
+  { cls: "r2", items: ["Java", "TypeScript", "SQL", "REST APIs"] },
+  { cls: "r3", items: ["Next.js", "Spring", "Django", "Express", "Cloud"] },
+];
+
+/** كل مثال: مشكلة حقيقية عند عملائنا، والكود اللي بيحلها، والنتيجة */
+const snippets = [
+  {
+    id: "node", lang: "Node.js", file: "menu.route.js",
+    problem: "المنيو بيحمّل ببطء وقت الذروة",
+    result: "اتحلت: المنيو بيفتح لحظيًا من الكاش",
+    code: `// Node.js · cache hot data, hit the DB only on a miss
+app.get("/api/menu", async (req, res) => {
+  const cached = await redis.get("menu");
+  if (cached) return res.json(JSON.parse(cached));
+
+  const menu = await db.menu.findMany({ where: { active: true } });
+  await redis.set("menu", JSON.stringify(menu), { EX: 60 });
+  res.json(menu);
+});`,
+  },
+  {
+    id: "python", lang: "Python", file: "daily_report.py",
+    problem: "صاحب المحل محتاج تقرير مبيعات كل يوم من غير Excel",
+    result: "اتحلت: التقرير بيوصله واتساب الساعة 11 بالليل",
+    code: `# Python · daily sales per branch, sent automatically
+import pandas as pd
+
+orders = pd.read_sql("SELECT * FROM orders WHERE day = CURRENT_DATE", db)
+paid = orders[orders.status == "paid"]
+
+report = (paid.groupby("branch")["total"]
+              .agg(["count", "sum"])
+              .sort_values("sum", ascending=False))
+
+notify.whatsapp(owner, report.to_string())`,
+  },
+  {
+    id: "java", lang: "Java", file: "StockService.java",
+    problem: "منتج بيتباع لاتنين في نفس اللحظة والمخزون واحد",
+    result: "اتحلت: مستحيل يتباع أكتر من المخزون",
+    code: `// Java · lock the row so stock never goes negative
+@Transactional
+public Order reserve(long productId, int qty) {
+    Product p = products.findByIdForUpdate(productId)
+        .orElseThrow(() -> new NotFound(productId));
+
+    if (p.getStock() < qty) throw new OutOfStock(productId);
+
+    p.setStock(p.getStock() - qty);
+    return orders.save(new Order(p, qty));
+}`,
+  },
+  {
+    id: "react", lang: "React", file: "CartButton.tsx",
+    problem: "العميل بيضغط \"أضف للسلة\" مرتين ومش عارف اتضاف ولا لأ",
+    result: "اتحلت: الزرار بيرد فورًا ومفيش طلب مكرر",
+    code: `// React · instant feedback, no double submits
+export function CartButton({ item }: { item: Item }) {
+  const { add, isPending } = useCart();
+
+  return (
+    <button disabled={isPending} onClick={() => add(item)}>
+      {isPending ? "Adding…" : \`Add · \${item.price} EGP\`}
+    </button>
+  );
+}`,
+  },
+];
+const data = JSON.stringify(snippets);
+---
+<section class="arsenal dark" aria-labelledby="arsenal-h">
+  <SpaceBg dense />
+  <div class="container wrap">
+    <div class="head">
+      <p class="eyebrow">ترسانة عتاد التقنية</p>
+      <h2 id="arsenal-h">أصعب مشكلة في مشروعك؟ <span>عندنا ليها حل مكتوب بالكود</span></h2>
+      <p class="lead">بنشتغل بنفس التقنيات اللي بتشغّل أكبر التطبيقات في العالم، وبنختار لكل مشروع الأنسب ليه، مش اللي إحنا متعودين عليه.</p>
+    </div>
+
+    <div class="grid2">
+      <div class="galaxy" role="img" aria-label="التقنيات اللي بنشتغل بيها: React وNode.js وPython وJava وTypeScript وSQL وغيرهم">
+        <div class="core"><span>ATAD</span><small>CORE</small></div>
+        {rings.map((r) => (
+          <div class={`ring ${r.cls}`}>
+            {r.items.map((t, i) => (
+              <span class={`chip p${i} of${r.items.length}`}><b>{t}</b></span>
+            ))}
+          </div>
+        ))}
+      </div>
+
+      <div class="term" data-term={data}>
+        <div class="term__bar">
+          <span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+          <div class="tabs" role="tablist" aria-label="أمثلة كود">
+            {snippets.map((s, i) => (
+              <button type="button" role="tab" id={`tab-${s.id}`} aria-selected={i === 0 ? "true" : "false"} aria-controls="term-panel" data-i={i}>{s.lang}</button>
+            ))}
+          </div>
+        </div>
+        <div class="term__body" id="term-panel" role="tabpanel" aria-live="off">
+          <p class="problem"><span class="lbl">المشكلة</span><span data-t="problem">{snippets[0]!.problem}</span></p>
+          <p class="file" data-t="file" dir="ltr">{snippets[0]!.file}</p>
+          <pre dir="ltr"><code data-t="code">{snippets[0]!.code}</code><span class="caret" aria-hidden="true"></span></pre>
+          <p class="result" data-t="result">✓ {snippets[0]!.result}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  interface Snip { id: string; lang: string; file: string; problem: string; result: string; code: string }
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const KW = /\b(const|let|return|if|await|async|export|function|import|public|new|throw|from|SELECT|FROM|WHERE)\b/;
+  const TOKEN = /(\/\/[^\n]*|#[^\n]*|"(?:[^"\\]|\\.)*"|`(?:[^`\\]|\\.)*`|@\w+|\b\d+\b|\b(?:const|let|return|if|await|async|export|function|import|public|new|throw|from|SELECT|FROM|WHERE)\b)/g;
+
+  /** تلوين بسيط: كل جزء بيتحط كنص في span (من غير innerHTML) */
+  const paint = (el: HTMLElement, src: string) => {
+    el.replaceChildren();
+    let last = 0;
+    for (const m of src.matchAll(TOKEN)) {
+      if (m.index > last) el.append(src.slice(last, m.index));
+      const t = m[0];
+      const span = document.createElement("span");
+      span.className = t.startsWith("//") || (t.startsWith("#") && !t.startsWith("#{")) ? "c" : t.startsWith('"') || t.startsWith("`") ? "s" : t.startsWith("@") ? "a" : /^\d/.test(t) ? "n" : KW.test(t) ? "k" : "";
+      span.textContent = t;
+      el.append(span);
+      last = m.index + t.length;
+    }
+    if (last < src.length) el.append(src.slice(last));
+  };
+
+  document.querySelectorAll<HTMLElement>("[data-term]").forEach((term) => {
+    const snips = JSON.parse(term.dataset["term"] ?? "[]") as Snip[];
+    const q = (k: string) => term.querySelector<HTMLElement>(`[data-t="${k}"]`)!;
+    const tabs = [...term.querySelectorAll<HTMLButtonElement>("[role=tab]")];
+    let cur = 0, timer = 0, typing = 0, auto = true, visible = false;
+
+    const select = (i: number) => {
+      cur = i;
+      const s = snips[i]!;
+      tabs.forEach((t, j) => t.setAttribute("aria-selected", j === i ? "true" : "false"));
+      term.querySelector("[role=tabpanel]")!.setAttribute("aria-labelledby", tabs[i]!.id);
+      q("problem").textContent = s.problem;
+      q("file").textContent = s.file;
+      q("result").textContent = `✓ ${s.result}`;
+      clearInterval(typing);
+      clearTimeout(timer);
+      const code = q("code");
+      if (reduced) { paint(code, s.code); q("result").classList.add("on"); return; }
+      q("result").classList.remove("on");
+      let n = 0;
+      typing = window.setInterval(() => {
+        n = Math.min(s.code.length, n + 3);
+        paint(code, s.code.slice(0, n));
+        if (n >= s.code.length) {
+          clearInterval(typing);
+          q("result").classList.add("on");
+          if (auto) timer = window.setTimeout(() => { if (visible) select((cur + 1) % snips.length); }, 3200);
+        }
+      }, 18);
+    };
+
+    tabs.forEach((t, i) => t.addEventListener("click", () => { auto = false; select(i); }));
+    term.addEventListener("keydown", (e) => {
+      const k = (e as KeyboardEvent).key;
+      if (k !== "ArrowLeft" && k !== "ArrowRight") return;
+      const dir = k === "ArrowLeft" ? 1 : -1; // RTL: الشمال هو اللي بعده
+      const i = (cur + dir + snips.length) % snips.length;
+      auto = false; select(i); tabs[i]!.focus();
+    });
+
+    paint(q("code"), snips[0]!.code);
+    q("result").classList.add("on");
+    new IntersectionObserver(([e]) => {
+      const was = visible;
+      visible = !!e?.isIntersecting;
+      if (visible && !was && auto) select(cur);
+    }, { threshold: 0.35 }).observe(term);
+  });
+</script>
+
+<style>
+  .arsenal { position: relative; overflow: hidden; padding-block: clamp(64px, 9vw, 120px); background: radial-gradient(120% 80% at 50% 0%, #0d2448 0%, #061224 60%, #030914 100%); }
+  .wrap { position: relative; z-index: 1; }
+  .head { text-align: center; max-width: 760px; margin: 0 auto clamp(36px, 5vw, 60px); }
+  .head h2 { font-size: clamp(28px, 4vw, 46px); line-height: 1.3; }
+  .head h2 span { display: block; background: linear-gradient(90deg, #12c2e9, #a78bfa, #12c2e9); background-size: 200% auto; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shine 6s linear infinite; }
+  .head .lead { margin-inline: auto; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1.1fr; gap: clamp(28px, 4vw, 56px); align-items: center; }
+
+  /* ── المجرة ── */
+  .galaxy { position: relative; aspect-ratio: 1; width: min(100%, 520px); margin-inline: auto; }
+  .core { position: absolute; inset: 37%; border-radius: 50%; display: grid; place-content: center; text-align: center;
+    background: radial-gradient(circle at 35% 30%, #5be4ff, #0b6fae 45%, #071a36 80%);
+    box-shadow: 0 0 40px rgba(18,194,233,.65), 0 0 120px rgba(18,194,233,.35), inset -10px -14px 30px rgba(0,0,0,.5); animation: pulse 3.2s ease-in-out infinite; }
+  .core span { font: 700 clamp(18px, 2.4vw, 26px)/1 var(--font-display); letter-spacing: .08em; color: #fff; }
+  .core small { font: 600 10px/1.6 var(--font-display); letter-spacing: .4em; color: #b8f3ff; }
+  .ring { position: absolute; border-radius: 50%; border: 1px dashed rgba(18,194,233,.32); animation: spin linear infinite; }
+  .r1 { inset: 26%; animation-duration: 26s; }
+  .r2 { inset: 15%; animation-duration: 40s; animation-direction: reverse; border-color: rgba(167,139,250,.35); }
+  .r3 { inset: 5%; animation-duration: 60s; border-style: dotted; border-color: rgba(255,255,255,.18); }
+  /* كل شريحة نقطة في مركز الحلقة، بتتلف بزاويتها وتتزق لحد حافة الحلقة (50cqw = نص قطرها) */
+  .ring { container-type: inline-size; }
+  .chip { position: absolute; top: 50%; left: 50%; width: 0; height: 0; --a: 0deg; transform: rotate(var(--a)) translateY(-50cqw) rotate(calc(var(--a) * -1)); }
+  .chip b { position: absolute; left: 0; top: 0; translate: -50% -50%; white-space: nowrap; direction: ltr; font: 600 clamp(11px, 1.3vw, 14px)/1 var(--font-display);
+    padding: 8px 12px; border-radius: 999px; color: #e8fbff; background: rgba(6,18,36,.85); border: 1px solid rgba(18,194,233,.55);
+    box-shadow: 0 0 16px rgba(18,194,233,.35), inset 0 0 12px rgba(18,194,233,.12); animation: spin linear infinite reverse; }
+  .r1 .chip b { animation-duration: 26s; }
+  .r2 .chip b { animation-duration: 40s; animation-direction: normal; border-color: rgba(167,139,250,.6); box-shadow: 0 0 16px rgba(167,139,250,.35); }
+  .r3 .chip b { animation-duration: 60s; border-color: rgba(255,255,255,.35); box-shadow: none; color: #c9d5e4; }
+  .of3.p1 { --a: 120deg; } .of3.p2 { --a: 240deg; }
+  .of5.p1 { --a: 72deg; } .of5.p2 { --a: 144deg; } .of5.p3 { --a: 216deg; } .of5.p4 { --a: 288deg; }
+  .r2 .p0 { --a: 45deg; } .r2 .p1 { --a: 135deg; } .r2 .p2 { --a: 225deg; } .r2 .p3 { --a: 315deg; }
+
+  /* ── التيرمنال ── */
+  .term { border-radius: 16px; background: rgba(4,12,26,.88); border: 1px solid rgba(18,194,233,.35); box-shadow: 0 0 0 1px rgba(255,255,255,.03), 0 30px 80px rgba(0,0,0,.5), 0 0 60px rgba(18,194,233,.15); overflow: hidden; backdrop-filter: blur(6px); }
+  .term__bar { display: flex; align-items: center; gap: 14px; padding: 10px 14px; background: rgba(255,255,255,.04); border-bottom: 1px solid rgba(255,255,255,.06); flex-wrap: wrap; }
+  .dots { display: flex; gap: 6px; direction: ltr; }
+  .dots i { width: 11px; height: 11px; border-radius: 50%; background: #ff5f57; }
+  .dots i:nth-child(2) { background: #febc2e; } .dots i:nth-child(3) { background: #28c840; }
+  .tabs { display: flex; gap: 4px; flex-wrap: wrap; direction: ltr; }
+  .tabs button { font: 600 13px/1 var(--font-display); color: #93a3b8; background: transparent; border: 1px solid transparent; border-radius: 8px; padding: 7px 11px; cursor: pointer; }
+  .tabs button:hover { color: #fff; }
+  .tabs button[aria-selected="true"] { color: #06121f; background: var(--cyan); }
+  .tabs button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+  .term__body { padding: 16px 18px 18px; }
+  .problem { margin: 0 0 10px; color: #e6eef7; font-size: 15px; display: flex; gap: 10px; align-items: baseline; }
+  .lbl { flex: none; font: 600 11.5px/1 var(--font-display); color: #ffb4a2; background: rgba(255,95,87,.14); border: 1px solid rgba(255,95,87,.4); padding: 4px 8px; border-radius: 6px; }
+  .file { margin: 0 0 6px; color: #64768f; font: 500 12.5px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; text-align: left; }
+  pre { margin: 0; min-height: 15.5em; max-height: 19em; overflow: auto; font: 13.5px/1.65 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: #d6e2f0; text-align: left; white-space: pre; }
+  pre :global(.k) { color: #c792ea; } pre :global(.s) { color: #c3e88d; } pre :global(.c) { color: #637792; font-style: italic; }
+  pre :global(.a) { color: #ffcb6b; } pre :global(.n) { color: #f78c6c; }
+  .caret { display: inline-block; width: 8px; height: 1.1em; vertical-align: text-bottom; background: var(--cyan); animation: blink 1s steps(1) infinite; }
+  .result { margin: 12px 0 0; color: #5af0a0; font-weight: 600; font-size: 15px; opacity: 0; transform: translateY(6px); transition: opacity .4s, transform .4s; }
+  .result:global(.on) { opacity: 1; transform: none; }
+
+  @keyframes spin { to { rotate: 360deg; } }
+  @keyframes pulse { 50% { box-shadow: 0 0 60px rgba(18,194,233,.85), 0 0 160px rgba(18,194,233,.45), inset -10px -14px 30px rgba(0,0,0,.5); } }
+  @keyframes shine { to { background-position: 200% center; } }
+  @keyframes blink { 50% { opacity: 0; } }
+  @media (max-width: 960px) { .grid2 { grid-template-columns: minmax(0, 1fr); } .galaxy { width: min(100%, 420px); } }
+  @media (max-width: 520px) { pre { font-size: 12px; } }
+  @media (prefers-reduced-motion: reduce) { .ring, .chip b, .core, .head h2 span, .caret { animation: none; } }
+</style>

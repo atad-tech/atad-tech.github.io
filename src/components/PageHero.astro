@@ -1,5 +1,6 @@
 ---
 import { href } from "@/lib/url";
+import SpaceBg from "./SpaceBg.astro";
 
 interface Props {
   title: string;
@@ -10,6 +11,7 @@ interface Props {
 const { title, lead, crumbs = [], eyebrow } = Astro.props;
 ---
 <section class="hero dark">
+  <SpaceBg />
   <div class="container hero__in">
     {crumbs.length > 0 && (
       <nav aria-label="مسار التصفح" class="crumbs">
@@ -30,7 +32,9 @@ const { title, lead, crumbs = [], eyebrow } = Astro.props;
 <style>
   .hero { position: relative; overflow: hidden; padding-block: clamp(40px, 6vw, 72px) clamp(48px, 7vw, 84px); }
   .hero::before { content: ""; position: absolute; width: 720px; height: 720px; border-radius: 50%; background: radial-gradient(circle, rgba(18,194,233,.18), transparent 65%); inset-inline-end: -260px; top: -320px; pointer-events: none; }
-  .hero__in { position: relative; max-width: var(--container); }
+  .hero { background: radial-gradient(120% 100% at 85% 0%, #10305c 0%, #0a1b33 50%, #050d1d 100%); }
+  .hero::before { z-index: 0; }
+  .hero__in { position: relative; z-index: 1; max-width: var(--container); }
   .hero h1 { max-width: 20ch; }
   .lead { font-size: clamp(17px, 1.6vw, 19.5px); max-width: 62ch; margin-bottom: 26px; }
   .crumbs ol { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; padding: 0; margin: 0 0 18px; font-size: 14px; color: #9fb0c7; }

@@ -1,5 +1,6 @@
 ---
 import Icon from "./Icon.astro";
+import SpaceBg from "./SpaceBg.astro";
 import { OFFER, whatsappLink } from "@/config/site";
 import { href } from "@/lib/url";
 
@@ -19,7 +20,8 @@ const points = [
 <section class="section--tight">
   <div class="container">
     <div class="cta dark">
-      <div>
+      <SpaceBg />
+      <div class="cta__main">
         <h2>{title}</h2>
         <p class="muted">{text}</p>
         <ul class="checks">{points.map((p) => <li><Icon name="check" size={18} />{p}</li>)}</ul>
@@ -35,7 +37,8 @@ const points = [
 
 <style>
   .cta { border-radius: var(--radius-l); padding: clamp(24px, 4vw, 40px); display: grid; grid-template-columns: 1.3fr 1fr; gap: 28px; align-items: center; position: relative; overflow: hidden; }
-  .cta::after { content: ""; position: absolute; inset-inline-start: -80px; bottom: -120px; width: 320px; height: 320px; background: conic-gradient(from 210deg, transparent 0 60%, rgba(18,194,233,.18) 60% 75%, transparent 75%); clip-path: polygon(50% 0, 100% 100%, 0 100%); pointer-events: none; }
+  .cta { background: radial-gradient(120% 120% at 100% 0%, #10305c, #0a1b33 55%, #050d1d); }
+  .cta__main, .cta__side { position: relative; z-index: 1; }
   .cta h2 { color: #fff; }
   .checks li { color: #e6eef7; }
   .cta__side { display: grid; gap: 10px; position: relative; z-index: 1; }
