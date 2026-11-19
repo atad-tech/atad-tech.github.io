@@ -1,0 +1,59 @@
+---
+/** إزاي بتدفع + اللي بتاخده + نسخة الانطلاق. بيظهر في صفحة الأسعار والرئيسية وصفحات البرمجة. */
+import Icon from "./Icon.astro";
+import { PAYMENT_PLAN } from "@/config/pricing";
+import { href } from "@/lib/url";
+
+interface Props { alt?: boolean }
+const { alt = false } = Astro.props;
+---
+<section class:list={["section", { "section--alt": alt }]} aria-labelledby="pay-h">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow">عرض السعر عندنا</p>
+      <h2 id="pay-h">بتدفع على شغل شافته عينك</h2>
+      <p>السعر مش رقم واحد ترميه وتستنى. بنفكّكهولك بند بند، وبتدفعه على 3 مراحل، وكل مرحلة بعد ما تشوف اللي اتعمل.</p>
+    </div>
+
+    <ol class="steps">
+      {PAYMENT_PLAN.map((p, i) => (
+        <li class="card">
+          <span class="pct">{p.pct}%</span>
+          <h3>{p.when}</h3>
+          <p>{i === 0 ? "دفعة صغيرة تبدأ بيها، ونبدأ التصميم وتشوفه قبل أي برمجة." : i === 1 ? "بعد ما تجرّب النسخة التجريبية بنفسك على موبايلك أو جهازك." : "بعد الرفع على المتاجر أو الإطلاق، والكود والحسابات كلها باسمك."}</p>
+        </li>
+      ))}
+    </ol>
+
+    <div class="grid grid-3 extras">
+      <div class="card">
+        <span class="icon-badge"><Icon name="check" /></span>
+        <h3>كل بند مكتوب بسعره</h3>
+        <p>التطبيق، لوحة التحكم، الدفع، التوصيل… كل حاجة بسعرها، والرفع على المتاجر وشهر الدعم الفني مشمولين.</p>
+      </div>
+      <div class="card">
+        <span class="icon-badge"><Icon name="check" /></span>
+        <h3>ابدأ بنسخة انطلاق (MVP)</h3>
+        <p>لو الميزانية ممسوكة، نبدأ بالمميزات الأساسية تنزل بيها السوق وتبدأ تبيع، ونكمّل الباقي في مرحلة تانية.</p>
+      </div>
+      <div class="card">
+        <span class="icon-badge"><Icon name="check" /></span>
+        <h3>جاهز يجيب عملاء</h3>
+        <p>مش هنسلّمك منتج فاضي: بيتسلّم متجهّز للإعلانات والتتبع، و<a href={href("/ads/")}>فريق الإعلانات</a> عندنا يقدر يطلق حملاتك ويجيبلك أول عملاء.</p>
+      </div>
+    </div>
+    <p class="cta"><a class="btn btn--primary btn--lg" href={href("/#calc")}>شوف عرض سعرك بالتفصيل</a></p>
+  </div>
+</section>
+
+<style>
+  .steps { list-style: none; padding: 0; margin: 0 0 22px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; counter-reset: s; }
+  .steps .card { position: relative; padding-top: 22px; }
+  .pct { display: inline-block; font: 700 34px/1 var(--font-display); color: var(--accent-ink); margin-bottom: 10px; }
+  .steps h3 { font-size: 18px; margin-bottom: 4px; }
+  .steps p, .extras p { color: var(--muted); margin: 0; font-size: 15.5px; }
+  .steps li:first-child { border-color: var(--cyan); box-shadow: inset 0 0 0 1px var(--cyan); }
+  .extras h3 { font-size: 18px; }
+  .cta { text-align: center; margin: 26px 0 0; }
+  @media (max-width: 760px) { .steps { grid-template-columns: 1fr; } }
+</style>

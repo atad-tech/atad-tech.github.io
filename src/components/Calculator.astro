@@ -1,9 +1,10 @@
 ---
-import { ADDONS, DESIGN_LEVELS, MARKETS, PROJECT_TYPES } from "@/config/pricing";
+import { ADDONS, BASE_ITEM, DESIGN_LEVELS, INCLUDED, MARKETS, PAYMENT_PLAN, PROJECT_TYPES } from "@/config/pricing";
 import { CONTACT, OFFER } from "@/config/site";
 
 const config = JSON.stringify({
   types: PROJECT_TYPES, addons: ADDONS, designs: DESIGN_LEVELS, markets: MARKETS,
+  base: BASE_ITEM, included: INCLUDED, plan: PAYMENT_PLAN,
   discount: OFFER.percent, whatsapp: CONTACT.whatsapp,
 });
 const typeKeys = Object.keys(PROJECT_TYPES) as (keyof typeof PROJECT_TYPES)[];
@@ -55,6 +56,22 @@ const marketKeys = Object.keys(MARKETS) as (keyof typeof MARKETS)[];
     <div><small data-r="label">التكلفة التقريبية</small><s data-r="old" hidden></s><span class="num" data-r="price">—</span></div>
     <div><small>مدة التنفيذ</small><b data-r="time">—</b></div>
   </div>
+  <section class="quote" aria-labelledby="quote-h">
+    <h3 id="quote-h">عرض السعر بالتفصيل</h3>
+    <p class="quote__sub">مش مجرد شاشات: ده كل اللي بتاخده.</p>
+    <ul class="items" data-r="items"></ul>
+
+    <h4>هتدفع إزاي؟ على 3 دفعات</h4>
+    <ol class="plan" data-r="plan"></ol>
+
+    <div class="mvp" data-r="mvp" hidden>
+      <b>عايز تبدأ بميزانية أقل؟</b>
+      <p data-r="mvp-text"></p>
+    </div>
+
+    <p class="ads"><b>جاهز يبيع من أول يوم:</b> بنسلّمك المشروع متجهّز للإعلانات والتتبع، ولو حابب، فريقنا يدير حملاتك الإعلانية ويجيبلك أول عملاء.</p>
+  </section>
+
   <button class="btn btn--wa btn--lg submit" type="submit">ابعتلي عرض سعر على واتساب</button>
   <p class="fine">ده تقدير مبدئي. السعر النهائي بيتحدد بعد ما نفهم تفاصيل مشروعك.</p>
 </form>
@@ -67,6 +84,9 @@ const marketKeys = Object.keys(MARKETS) as (keyof typeof MARKETS)[];
   interface Cfg {
     types: Record<string, { name: string; price: Range; weeks: Range }>;
     addons: Record<string, { name: string; price: Range }>;
+    base: Record<string, string>;
+    included: Record<string, string[]>;
+    plan: { pct: number; when: string; note: string }[];
     designs: Record<string, string>;
     markets: Record<string, { label: string; currency: string; rate: number; mult: number }>;
     discount: number; whatsapp: string;
@@ -96,8 +116,58 @@ const marketKeys = Object.keys(MARKETS) as (keyof typeof MARKETS)[];
       };
     };
 
+    const el = (tag: string, cls?: string, text?: string) => {
+      const e = document.createElement(tag);
+      if (cls) e.className = cls;
+      if (text !== undefined) e.textContent = text;
+      return e;
+    };
+    /** سعر بند واحد بعد التصميم والسوق والخصم */
+    const itemPrice = (r: Range, s: ReturnType<typeof state>): Range => {
+      const m = cfg.markets[s.market]!, d = parseFloat(s.design);
+      const conv = (n: number) => round((round(n * d * m.mult * m.rate) * (100 - s.pct)) / 100);
+      return [conv(r[0]), conv(r[1])];
+    };
+    const part = (pct: number, s: ReturnType<typeof state>): Range => [round((s.dlo * pct) / 100), round((s.dhi * pct) / 100)];
+
+    const renderQuote = (s: ReturnType<typeof state>) => {
+      const range = (r: Range) => `${f(r[0])} – ${f(r[1])} ${s.cur}`;
+      const items = out("items");
+      items.replaceChildren();
+      const row = (label: string, value: string, cls?: string) => {
+        const li = el("li", cls);
+        li.append(el("span", undefined, label), el("b", undefined, value));
+        items.append(li);
+      };
+      const t = cfg.types[s.type]!;
+      row(cfg.base[s.type] ?? t.name, range(itemPrice(t.price, s)));
+      for (const k of s.feats) row(cfg.addons[k]!.name, range(itemPrice(cfg.addons[k]!.price, s)));
+      for (const inc of cfg.included[s.type] ?? []) row(inc, "مشمول", "free");
+
+      const plan = out("plan");
+      plan.replaceChildren();
+      for (const p of cfg.plan) {
+        const li = el("li");
+        const txt = el("span");
+        txt.append(el("b", undefined, `${p.pct}% ${p.when}`), el("small", undefined, p.note));
+        li.append(txt, el("b", "amt", range(part(p.pct, s))));
+        plan.append(li);
+      }
+
+      const mvp = out("mvp");
+      mvp.hidden = s.feats.length === 0;
+      if (s.feats.length) {
+        const base = itemPrice(t.price, s);
+        const rest: Range = [s.dlo - base[0], s.dhi - base[1]];
+        out("mvp-text").textContent =
+          `ابدأ بنسخة انطلاق (MVP) فيها الأساسي بـ ${range(base)}، تنزل بيها السوق وتبدأ تبيع، ` +
+          `وبعدين نضيف ${s.feats.map((k) => cfg.addons[k]!.name).join(" و")} في مرحلة تانية بحوالي ${range(rest)}.`;
+      }
+    };
+
     const render = () => {
       const s = state();
+      renderQuote(s);
       const range = (a: number, b: number) => `${f(a)} – ${f(b)} ${s.cur}`;
       out("price").textContent = s.pct ? range(s.dlo, s.dhi) : range(s.lo, s.hi);
       out("old").hidden = !s.pct;
@@ -117,6 +187,7 @@ const marketKeys = Object.keys(MARKETS) as (keyof typeof MARKETS)[];
         s.pct
           ? `• التقدير بعد خصم ${s.pct}%: ${f(s.dlo)} – ${f(s.dhi)} ${s.cur} (بدل ${f(s.lo)} – ${f(s.hi)})`
           : `• التقدير من الحاسبة: ${f(s.lo)} – ${f(s.hi)} ${s.cur}`,
+        `• الدفع: ${cfg.plan.map((p) => `${p.pct}%`).join(" / ")} (المقدّم ${f(part(cfg.plan[0]!.pct, s)[0])} – ${f(part(cfg.plan[0]!.pct, s)[1])} ${s.cur})`,
       ].join("\n"));
     };
 
@@ -150,6 +221,27 @@ const marketKeys = Object.keys(MARKETS) as (keyof typeof MARKETS)[];
   .result .num { font: 700 25px/1.3 var(--font-display); color: var(--cyan); display: block; }
   .result small { display: block; color: #9fb0c7; font-size: 12.5px; }
   .result s { display: block; color: #9fb0c7; font-size: 15px; text-decoration-thickness: 2px; }
+  .quote { border: 1.5px solid var(--line); border-radius: 12px; padding: 16px 18px; margin: 0 0 14px; }
+  .quote h3 { font-size: 17px; margin: 0; }
+  .quote__sub { color: var(--muted); font-size: 13.5px; margin: 2px 0 10px; }
+  .quote h4 { font-size: 15px; margin: 16px 0 8px; }
+  /* العناصر دي بتتعمل بالـ JS، فلازم :global عشان الـ scoped CSS يوصلها */
+  .items, .plan { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+  .items :global(li), .plan :global(li) { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 4px 12px; padding: 8px 0; border-bottom: 1px dashed var(--line); font-size: 14px; }
+  .items :global(li:last-child), .plan :global(li:last-child) { border-bottom: 0; }
+  .items :global(li > span) { flex: 1 1 180px; }
+  .items :global(li > b), .plan :global(.amt) { white-space: nowrap; font-family: var(--font-display); font-size: 14px; margin-inline-start: auto; }
+  .items :global(li.free > b) { color: var(--wa); }
+  .items :global(li.free > span::before) { content: "✓ "; color: var(--wa); font-weight: 700; }
+  .plan :global(li > span) { flex: 1 1 180px; }
+  .plan :global(li > span > b) { display: block; font-size: 14px; }
+  .plan :global(li > span > small) { display: block; color: var(--muted); font-size: 12.5px; }
+  .plan :global(li:first-child) { background: var(--cyan-soft); margin: 0 -10px; padding: 8px 10px; border-radius: 8px; border-bottom: 0; }
+  .mvp { margin-top: 14px; padding: 12px 14px; border-radius: 10px; background: var(--surface-2); border-inline-start: 3px solid var(--cyan); }
+  .mvp b { font-size: 14.5px; }
+  .mvp p { margin: 4px 0 0; font-size: 14px; color: var(--ink); }
+  .ads { margin: 14px 0 0; font-size: 13.5px; color: var(--muted); }
+  .ads b { color: var(--ink); }
   .submit { width: 100%; }
   .fine { color: var(--muted); font-size: 12.5px; margin: 10px 0 0; text-align: center; }
   @media (max-width: 520px) { .calc { padding: 18px; } .opts.three { grid-template-columns: 1fr 1fr; } }

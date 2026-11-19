@@ -21,10 +21,31 @@ test.describe("calculator", () => {
     await page.goto("/");
     await page.locator('input[value="store"]').check({ force: true });
     await page.locator('input[value="pay"]').check({ force: true });
-    // store 25,000–50,000 + pay 5,000–8,000 = 30,000–58,000 → 40% off = 18,000–35,000 (rounded)
-    await expect(page.locator('[data-r="price"]')).toHaveText("18,000 – 35,000 جنيه");
+    // store 25,000–50,000 + pay 5,000–8,000 = 30,000–58,000 → 30% off = 21,000–41,000 (rounded)
+    await expect(page.locator('[data-r="price"]')).toHaveText("21,000 – 41,000 جنيه");
     await expect(page.locator('[data-r="old"]')).toHaveText("30,000 – 58,000 جنيه");
     await expect(page.locator('[data-r="time"]')).toHaveText("5 إلى 7 أسابيع");
+  });
+
+  test("shows an itemized quote, the 3-payment plan and an MVP option", async ({ page }) => {
+    await page.clock.setFixedTime(new Date("2026-11-20T10:00:00+02:00"));
+    await page.goto("/");
+    await page.locator('input[value="store"]').check({ force: true });
+    // من غير مميزات: مفيش MVP
+    await expect(page.locator('[data-r="mvp"]')).toBeHidden();
+    await page.locator('input[value="pay"]').check({ force: true });
+    const items = page.locator('[data-r="items"] li');
+    // store 25,000–50,000 → 30% off = 17,500→18,000 – 35,000 ؛ pay 5,000–8,000 → 3,500 – 5,600
+    await expect(items.nth(0)).toContainText("18,000 – 35,000 جنيه");
+    await expect(items.nth(1)).toContainText("دفع أونلاين");
+    await expect(items.nth(1)).toContainText("3,500 – 5,600 جنيه");
+    await expect(page.locator('[data-r="items"] li.free').first()).toContainText("مشمول");
+    // 30% مقدّم من 21,000 – 41,000 = 6,300 – 12,300 ← 12,000 بعد التقريب
+    const plan = page.locator('[data-r="plan"] li');
+    await expect(plan).toHaveCount(3);
+    await expect(plan.nth(0)).toContainText("6,300 – 12,000 جنيه");
+    await expect(page.locator('[data-r="mvp"]')).toBeVisible();
+    await expect(page.locator('[data-r="mvp-text"]')).toContainText("نسخة انطلاق (MVP)");
   });
 
   test("converts to Saudi riyals", async ({ page }) => {
@@ -41,7 +62,8 @@ test.describe("calculator", () => {
     await page.locator(".calc button[type=submit]").click();
     const [msg] = await opened(page);
     expect(msg).toContain("• المشروع: موقع تعريفي");
-    expect(msg).toContain("خصم 40%");
+    expect(msg).toContain("خصم 30%");
+    expect(msg).toContain("• الدفع: 30% / 40% / 30%");
     expect(msg).toContain("(وصلتلكم من: facebook)");
   });
 
@@ -56,7 +78,7 @@ test.describe("calculator", () => {
 
 test.describe("offer countdown", () => {
   test("runs before the deadline", async ({ page }) => {
-    await page.clock.setFixedTime(new Date("2026-12-13T23:00:00+02:00"));
+    await page.clock.setFixedTime(new Date("2027-01-13T23:00:00+02:00"));
     await page.goto("/");
     await expect(page.locator(".promo")).toBeVisible();
     await expect(page.locator('.promo [data-unit="h"]')).toHaveText("00");
@@ -64,7 +86,7 @@ test.describe("offer countdown", () => {
   });
 
   test("disappears after the deadline and the calculator drops the discount", async ({ page }) => {
-    await page.clock.setFixedTime(new Date("2026-12-14T00:00:01+02:00"));
+    await page.clock.setFixedTime(new Date("2027-01-14T00:00:01+02:00"));
     await page.goto("/");
     await expect(page.locator(".promo")).toBeHidden();
     await expect(page.locator('[data-r="label"]')).toHaveText("التكلفة التقريبية");

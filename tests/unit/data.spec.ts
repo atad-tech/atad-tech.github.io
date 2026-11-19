@@ -92,3 +92,12 @@ test("guides are complete and their prices match the calculator", async () => {
     expect(g.seo.title + g.title, `${g.slug} keyword in title`).toContain(g.keyword.split(" ")[0]!);
   }
 });
+
+test("quote presentation data is complete", async () => {
+  const { PAYMENT_PLAN, INCLUDED, BASE_ITEM } = await import("../../src/config/pricing");
+  expect(PAYMENT_PLAN.reduce((a, p) => a + p.pct, 0)).toBe(100);
+  for (const k of Object.keys(PROJECT_TYPES)) {
+    expect(BASE_ITEM[k as keyof typeof BASE_ITEM], k).toBeTruthy();
+    expect(INCLUDED[k as keyof typeof INCLUDED].length, k).toBeGreaterThanOrEqual(3);
+  }
+});

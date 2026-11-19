@@ -29,8 +29,8 @@ export const SOCIAL = {
 
 /** عرض الإطلاق. خلّي percent = 0 عشان تلغيه. التاريخ بتوقيت القاهرة. */
 export const OFFER = {
-  percent: 40,
-  endsOn: "2026-12-13",
+  percent: 30,
+  endsOn: "2027-01-13",
   label: "على أول مشروع ليك معانا",
 } as const;
 

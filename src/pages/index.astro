@@ -6,6 +6,7 @@ import ServiceCard from "@/components/ServiceCard.astro";
 import WorkCard from "@/components/WorkCard.astro";
 import { workBySlug } from "@/data/work";
 import { guideBySlug, guidePath } from "@/data/guides";
+import HowYouPay from "@/components/HowYouPay.astro";
 import Faq from "@/components/Faq.astro";
 import CtaBand from "@/components/CtaBand.astro";
 import Icon from "@/components/Icon.astro";
@@ -27,7 +28,7 @@ const why = [
 const faq = [
   { q: "كام تكلفة تصميم موقع أو تطبيق؟", a: `الموقع التعريفي بيبدأ من حوالي ${fmt(PROJECT_TYPES.site.price[0])} جنيه، والمتجر من ${fmt(PROJECT_TYPES.store.price[0])}، والتطبيق من ${fmt(PROJECT_TYPES.app.price[0])} جنيه. السعر بيتحدد حسب المميزات، وتقدر تحسبه من الحاسبة في أول الصفحة.` },
   { q: "بتشتغلوا مع عملاء من الخليج؟", a: "أيوه، بنشتغل أونلاين مع عملاء في مصر والسعودية والإمارات والكويت، وبنتابع بمكالمات فيديو وتقارير دورية." },
-  { q: "الدفع بيبقى إزاي؟", a: "على مراحل، وكل مرحلة مربوطة بتسليم واضح، فإنت بتدفع على شغل شفته." },
+  { q: "الدفع بيبقى إزاي؟", a: "على 3 دفعات: 30% مقدّم عند الاتفاق، و40% عند تسليم النسخة التجريبية، و30% عند الإطلاق. فإنت بتدفع على شغل شفته." },
   { q: "بعد ما المشروع يخلص، مين يتابعه؟", a: "إحنا. بنقدم دعم فني وصيانة، وتطوير لأي مميزات جديدة تحتاجها بعدين." },
 ];
 ---
@@ -127,6 +128,8 @@ const faq = [
       </div>
     </div>
   </section>
+
+  <HowYouPay alt />
 
   <section class="section">
     <div class="container">
