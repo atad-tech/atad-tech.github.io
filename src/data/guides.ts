@@ -50,6 +50,8 @@ const systemFull = sumRanges(P.system.price, A.book.price, A.pay.price, A.accoun
 const designMult = (r: Range, d: number): Range => priceIn(r, "eg", d);
 
 const PUBLISHED = "2026-10-28";
+/** آخر مرة الأسعار أو المحتوى اتغيّروا */
+const UPDATED = "2026-11-19";
 
 export const GUIDES: Guide[] = [
   /* ───────────────────────── 1. تكلفة تطبيق في مصر ───────────────────────── */
@@ -64,7 +66,7 @@ export const GUIDES: Guide[] = [
     lead: "أسعار حقيقية لتطبيقات الأندرويد والآيفون في مصر، محسوبة بنفس الحاسبة اللي بنسعّر بيها مشاريعنا، مع شرح كل حاجة بتزوّد السعر أو تنزّله.",
     answer: `تطبيق الموبايل (أندرويد وآيفون) في مصر بيتكلف من **${eg(appBasic)}** للنسخة الأساسية بتصميم بسيط. تطبيق فيه لوحة تحكم وحسابات ودفع أونلاين بيوصل **${eg(appStandard)}**، ولو فيه توصيل وتتبع طلبات **${eg(appDelivery)}**. المدة من ${weeks(P.app.weeks)} للنسخة الأساسية.`,
     published: PUBLISHED,
-    updated: PUBLISHED,
+    updated: UPDATED,
     sections: [
       {
         id: "prices",
@@ -197,7 +199,7 @@ export const GUIDES: Guide[] = [
     lead: "أسعار برمجة تطبيقات الجوال للشركات والمتاجر والمطاعم في السعودية بالريال، وليه الشغل مع فريق في مصر بيوفّر من غير ما الجودة تقل.",
     answer: `برمجة تطبيق جوال (أندرويد وآيفون) لعميل في السعودية بتتكلف من **${sa(appBasic)}** للنسخة الأساسية، و**${sa(appStandard)}** لتطبيق فيه لوحة تحكم وحسابات ودفع، و**${sa(appDelivery)}** لتطبيق طلبات وتوصيل. المدة من ${weeks(P.app.weeks)}.`,
     published: PUBLISHED,
-    updated: PUBLISHED,
+    updated: UPDATED,
     sections: [
       {
         id: "prices",
@@ -297,7 +299,7 @@ export const GUIDES: Guide[] = [
     lead: "ليه المطاعم بتعمل تطبيق خاص بيها، إيه المميزات اللي بتفرق فعلًا في المبيعات، وتكلفته كام، مع نماذج شاشات صممناها لمطاعم برجر وبيتزا ومشويات.",
     answer: `تطبيق مطعم فيه منيو وسلة ودفع أونلاين وتوصيل وتتبع للطلب ولوحة تحكم بيتكلف في مصر من **${eg(appDelivery)}**، وفي السعودية من **${sa(appDelivery)}**، بتصميم بسيط. بياخد من ${P.app.weeks[0] + 1} لـ ${P.app.weeks[1] + 2} أسبوع تقريبًا.`,
     published: PUBLISHED,
-    updated: PUBLISHED,
+    updated: UPDATED,
     sections: [
       {
         id: "why",
@@ -406,7 +408,7 @@ export const GUIDES: Guide[] = [
     lead: "دليل عملي لأي صاحب شغل هيتعامل مع شركة برمجة لأول مرة: تسأل إيه، تطلب إيه مكتوب، وإزاي تعرف إن العرض الرخيص مش هيكلّفك أكتر بعدين.",
     answer: "اختار شركة البرمجة اللي **توريك شغل حقيقي بنفس المستوى اللي عايزه**، و**تكتبلك عرض سعر فيه المميزات والمدة ومراحل الدفع**، و**تخلّي الكود والحسابات باسمك**، وتوضحلك الدعم بعد الإطلاق. وقارن العروض بالمميزات مش بالرقم بس.",
     published: PUBLISHED,
-    updated: PUBLISHED,
+    updated: UPDATED,
     sections: [
       {
         id: "questions",
@@ -504,7 +506,7 @@ export const GUIDES: Guide[] = [
     lead: "أسعار المتاجر الإلكترونية في مصر بالتفصيل، والفرق بين متجر خاص ومنصات زي Shopify، وإيه المميزات اللي لازم تبدأ بيها عشان تبيع من أول يوم.",
     answer: `المتجر الإلكتروني في مصر بيتكلف من **${eg(P.store.price)}** بتصميم بسيط. ومع لوحة تحكم ودفع أونلاين وحسابات للعملاء بيوصل **${eg(storeFull)}**. المدة من ${weeks(P.store.weeks)}.`,
     published: PUBLISHED,
-    updated: PUBLISHED,
+    updated: UPDATED,
     sections: [
       {
         id: "prices",
@@ -597,7 +599,7 @@ export const GUIDES: Guide[] = [
     lead: "أسعار تصميم المواقع والمتاجر الإلكترونية وأنظمة الإدارة للشركات في السعودية بالريال، وإيه اللي لازم يبقى في موقعك للسوق السعودي.",
     answer: `الموقع التعريفي لشركة في السعودية بيتكلف من **${sa(P.site.price)}**، والمتجر الإلكتروني من **${sa(P.store.price)}**، ونظام الإدارة من **${sa(P.system.price)}**، بتصميم بسيط.`,
     published: PUBLISHED,
-    updated: PUBLISHED,
+    updated: UPDATED,
     sections: [
       {
         id: "prices",
@@ -677,7 +679,7 @@ export const GUIDES: Guide[] = [
     lead: "أسعار برمجة أنظمة الإدارة المخصصة (حجوزات، مخازن، حسابات، إدارة عملاء)، وإمتى السيستم المخصص يستاهل بدل البرامج الجاهزة.",
     answer: `برمجة نظام إدارة مخصص في مصر بتتكلف من **${eg(P.system.price)}** بتصميم بسيط، ومع حجز مواعيد ودفع أونلاين وحسابات للعملاء بتوصل **${eg(systemFull)}**. المدة من ${weeks(P.system.weeks)}.`,
     published: PUBLISHED,
-    updated: PUBLISHED,
+    updated: UPDATED,
     sections: [
       {
         id: "types",
@@ -756,7 +758,7 @@ export const GUIDES: Guide[] = [
     lead: "مقارنة عملية تساعدك تختار تبدأ بموقع ولا متجر ولا تطبيق، حسب نوع شغلك وعملاءك وميزانيتك.",
     answer: `لو عايز الناس **تلاقيك على جوجل** ابدأ بموقع (من ${eg(P.site.price)}). لو بتبيع منتجات أونلاين ابدأ بمتجر (من ${eg(P.store.price)}). ولو عندك **عملاء بيطلبوا منك كتير ومتكرر** زي المطاعم والتوصيل، التطبيق (من ${eg(P.app.price)}) هو اللي هيرجّعهم.`,
     published: PUBLISHED,
-    updated: PUBLISHED,
+    updated: UPDATED,
     sections: [
       {
         id: "compare",

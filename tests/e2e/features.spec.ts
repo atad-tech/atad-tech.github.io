@@ -21,9 +21,9 @@ test.describe("calculator", () => {
     await page.goto("/");
     await page.locator('input[value="store"]').check({ force: true });
     await page.locator('input[value="pay"]').check({ force: true });
-    // store 25,000–50,000 + pay 5,000–8,000 = 30,000–58,000 → 30% off = 21,000–41,000 (rounded)
-    await expect(page.locator('[data-r="price"]')).toHaveText("21,000 – 41,000 جنيه");
-    await expect(page.locator('[data-r="old"]')).toHaveText("30,000 – 58,000 جنيه");
+    // store 20,000–40,000 + pay 4,000–7,000 = 24,000–47,000 → 40% off = 14,000–28,000 (rounded)
+    await expect(page.locator('[data-r="price"]')).toHaveText("14,000 – 28,000 جنيه");
+    await expect(page.locator('[data-r="old"]')).toHaveText("24,000 – 47,000 جنيه");
     await expect(page.locator('[data-r="time"]')).toHaveText("5 إلى 7 أسابيع");
   });
 
@@ -35,15 +35,15 @@ test.describe("calculator", () => {
     await expect(page.locator('[data-r="mvp"]')).toBeHidden();
     await page.locator('input[value="pay"]').check({ force: true });
     const items = page.locator('[data-r="items"] li');
-    // store 25,000–50,000 → 30% off = 17,500→18,000 – 35,000 ؛ pay 5,000–8,000 → 3,500 – 5,600
-    await expect(items.nth(0)).toContainText("18,000 – 35,000 جنيه");
+    // store 20,000–40,000 → 40% off = 12,000 – 24,000 ؛ pay 4,000–7,000 → 2,400 – 4,200
+    await expect(items.nth(0)).toContainText("12,000 – 24,000 جنيه");
     await expect(items.nth(1)).toContainText("دفع أونلاين");
-    await expect(items.nth(1)).toContainText("3,500 – 5,600 جنيه");
+    await expect(items.nth(1)).toContainText("2,400 – 4,200 جنيه");
     await expect(page.locator('[data-r="items"] li.free').first()).toContainText("مشمول");
-    // 30% مقدّم من 21,000 – 41,000 = 6,300 – 12,300 ← 12,000 بعد التقريب
+    // 30% مقدّم من 14,000 – 28,000 = 4,200 – 8,400
     const plan = page.locator('[data-r="plan"] li');
     await expect(plan).toHaveCount(3);
-    await expect(plan.nth(0)).toContainText("6,300 – 12,000 جنيه");
+    await expect(plan.nth(0)).toContainText("4,200 – 8,400 جنيه");
     await expect(page.locator('[data-r="mvp"]')).toBeVisible();
     await expect(page.locator('[data-r="mvp-text"]')).toContainText("نسخة انطلاق (MVP)");
   });
@@ -62,7 +62,7 @@ test.describe("calculator", () => {
     await page.locator(".calc button[type=submit]").click();
     const [msg] = await opened(page);
     expect(msg).toContain("• المشروع: موقع تعريفي");
-    expect(msg).toContain("خصم 30%");
+    expect(msg).toContain("خصم 40%");
     expect(msg).toContain("• الدفع: 30% / 40% / 30%");
     expect(msg).toContain("(وصلتلكم من: facebook)");
   });

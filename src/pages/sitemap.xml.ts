@@ -8,7 +8,7 @@ import { absolute, servicePath } from "@/lib/url";
  * آخر تعديل حقيقي للمحتوى. جوجل بيتجاهل lastmod لو كان دايمًا "النهارده"،
  * فبنحدّث التاريخ ده بإيدينا لما المحتوى يتغير فعلًا.
  */
-const CONTENT_UPDATED = "2026-10-28";
+const CONTENT_UPDATED = "2026-11-19";
 
 interface Entry { path: string; priority: string; lastmod?: string; images?: { loc: string; title: string }[] }
 

@@ -74,8 +74,8 @@ test("every portfolio item is complete, honest and has its images", async () => 
 test("guides are complete and their prices match the calculator", async () => {
   const { GUIDES } = await import("../../src/data/guides");
   const { priceIn } = await import("../../src/config/pricing");
-  // نفس معادلة الحاسبة: 50,000 جنيه × 5 ÷ 13 = 19,231 ← 19,000 ريال
-  expect(priceIn(PROJECT_TYPES.app.price, "sa")).toEqual([19000, 38000]);
+  // نفس معادلة الحاسبة: 40,000 جنيه × 5 ÷ 13 = 15,385 ← 15,000 ريال
+  expect(priceIn(PROJECT_TYPES.app.price, "sa")).toEqual([15000, 31000]);
   expect(priceIn(PROJECT_TYPES.app.price, "eg")).toEqual(PROJECT_TYPES.app.price);
   const slugs = new Set<string>();
   for (const g of GUIDES) {
