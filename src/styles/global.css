@@ -153,3 +153,46 @@ td.num { white-space: nowrap; font-variant-numeric: tabular-nums; }
 @media print {
   .fx [data-reveal]:not([data-reveal="stagger"]), .fx [data-reveal="stagger"] > * { opacity: 1 !important; transform: none !important; }
 }
+
+/* ═══════════ الطابع الكوني: سكاشن داكنة + كروت زجاجية ═══════════ */
+@property --ang { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+
+.cosmos { position: relative; overflow: hidden; isolation: isolate; color: #e6eef7; padding-block: clamp(64px, 9vw, 112px);
+  background: radial-gradient(90% 70% at 85% 0%, rgba(18,194,233,.16), transparent 60%), radial-gradient(70% 60% at 0% 100%, rgba(124,58,237,.16), transparent 60%), linear-gradient(180deg, #050d1d, #071629 50%, #050d1d); }
+.cosmos--violet { background: radial-gradient(80% 70% at 10% 0%, rgba(167,139,250,.2), transparent 60%), radial-gradient(70% 60% at 100% 100%, rgba(18,194,233,.14), transparent 60%), linear-gradient(180deg, #060b1f, #0b1030 50%, #060b1f); }
+.cosmos--teal { background: radial-gradient(80% 70% at 50% 0%, rgba(20,184,166,.18), transparent 60%), radial-gradient(60% 60% at 100% 100%, rgba(124,58,237,.12), transparent 60%), linear-gradient(180deg, #04121a, #061a24 50%, #04121a); }
+/* حقل نجوم خفيف بالـ CSS بس (من غير كانفاس) */
+.cosmos::before { content: ""; position: absolute; inset: -50% 0 0; z-index: -1; pointer-events: none; opacity: .55;
+  background-image: radial-gradient(1px 1px at 20px 30px, #fff, transparent), radial-gradient(1px 1px at 120px 80px, #9ee8ff, transparent), radial-gradient(1.5px 1.5px at 200px 160px, #fff, transparent), radial-gradient(1px 1px at 310px 40px, #c4b5fd, transparent), radial-gradient(1px 1px at 380px 210px, #fff, transparent), radial-gradient(1.5px 1.5px at 60px 250px, #9ee8ff, transparent);
+  background-size: 420px 300px; animation: starDrift 90s linear infinite; }
+.cosmos::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: linear-gradient(rgba(18,194,233,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(18,194,233,.05) 1px, transparent 1px); background-size: 56px 56px; mask-image: radial-gradient(70% 60% at 50% 40%, #000, transparent); }
+.cosmos .section-head h2, .cosmos h2 { color: #fff; }
+.cosmos .section-head p:not(.eyebrow) { color: #9fb0c7; }
+.cosmos .eyebrow { color: var(--cyan); }
+.cosmos .btn--ghost { border-color: rgba(255,255,255,.22); color: #fff; }
+.cosmos .btn--ghost:hover { border-color: var(--cyan); }
+.grad { background: linear-gradient(90deg, #12c2e9, #7dd3fc 40%, #a78bfa 75%, #f0abfc); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+.gcard { position: relative; isolation: isolate; display: flex; flex-direction: column; color: #e6eef7; text-decoration: none; border-radius: 20px; padding: 26px;
+  background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02)); border: 1px solid rgba(148,197,255,.14);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.06); backdrop-filter: blur(10px); transition: transform .35s cubic-bezier(.2,.7,.2,1), box-shadow .35s, border-color .35s; }
+.gcard::before { content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1.5px; pointer-events: none; opacity: 0; transition: opacity .35s;
+  background: conic-gradient(from var(--ang), transparent 0 50%, #12c2e9 68%, #a78bfa 82%, transparent 95%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; animation: spinAng 4s linear infinite; }
+.gcard:hover, .gcard:focus-visible { border-color: transparent; box-shadow: 0 30px 70px -30px rgba(18,194,233,.55), inset 0 1px 0 rgba(255,255,255,.08); }
+.gcard:hover::before, .gcard:focus-visible::before { opacity: 1; }
+a.gcard:hover:not([data-tilt]) { transform: translateY(-4px); }
+.gcard h3 { color: #fff; font-size: 20px; margin-bottom: 8px; }
+.gcard p { color: #9fb0c7; margin: 0; font-size: 15.5px; }
+.gcard .more { margin-top: auto; padding-top: 16px; color: var(--cyan); font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+.orb { width: 54px; height: 54px; border-radius: 16px; display: grid; place-items: center; color: #04121f; margin-bottom: 18px; flex: none;
+  background: linear-gradient(135deg, #12c2e9, #7dd3fc 45%, #a78bfa); box-shadow: 0 0 0 1px rgba(255,255,255,.15) inset, 0 10px 30px -6px rgba(18,194,233,.65); }
+.chiplist { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; padding: 0; margin: 16px 0 0; }
+.chiplist li { font: 600 12.5px/1 var(--font-display); color: #cfe9ff; padding: 7px 12px; border-radius: 99px; background: rgba(18,194,233,.1); border: 1px solid rgba(18,194,233,.3); }
+.price-tag { display: inline-flex; align-items: baseline; gap: 6px; margin-top: 16px; font-size: 14px; color: #9fb0c7; }
+.price-tag b { font: 700 22px/1 var(--font-display); color: #fff; }
+
+@keyframes spinAng { to { --ang: 360deg; } }
+@keyframes starDrift { to { transform: translateY(300px); } }
+@media (prefers-reduced-motion: reduce) { .cosmos::before, .gcard::before { animation: none; } }
+@media print { .cosmos { background: #071629 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; } }

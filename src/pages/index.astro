@@ -2,9 +2,8 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import Calculator from "@/components/Calculator.astro";
 import Countdown from "@/components/Countdown.astro";
-import ServiceCard from "@/components/ServiceCard.astro";
 import WorkCard from "@/components/WorkCard.astro";
-import { workBySlug } from "@/data/work";
+import { screenSrc, workBySlug } from "@/data/work";
 import { guideBySlug, guidePath } from "@/data/guides";
 import HowYouPay from "@/components/HowYouPay.astro";
 import SpaceBg from "@/components/SpaceBg.astro";
@@ -19,13 +18,15 @@ import { href, servicePath } from "@/lib/url";
 import { faqPage } from "@/lib/schema";
 
 const featured = SERVICES.filter((s) => s.featured);
+const heroWork = workBySlug("pizza-app");
+const catIcon: Record<CategoryId, "phone" | "megaphone" | "pen" | "server"> = { dev: "phone", marketing: "megaphone", design: "pen", infra: "server" };
 const others = (Object.keys(CATEGORIES) as CategoryId[]).filter((c) => c !== "dev");
 const offerDate = new Date(`${OFFER.endsOn}T12:00:00+02:00`).toLocaleDateString("ar-EG", { day: "numeric", month: "long", year: "numeric", timeZone: "Africa/Cairo" });
 const why = [
   { t: "تصميم خاص، مش تمبلت", d: "كل مشروع بيتصمم من الصفر على هوية براندك، عشان شغلك مايشبهش حد." },
   { t: "فريق واحد لكل حاجة", d: "برمجة وتصميم وتسويق واستضافة. مش هتنسّق بين 4 شركات." },
   { t: "سعر واضح من الأول", d: "تقدير فوري من الحاسبة، وبعدها سعر نهائي مكتوب قبل ما نبدأ." },
-  { t: "بتدفع على شغل شفته", d: "الدفع على مراحل، وكل مرحلة مربوطة بتسليم واضح." },
+  { t: "بتدفع على شغل شفته", d: "3 دفعات: 30% مقدّم، و40% مع النسخة التجريبية، و30% عند الإطلاق." },
 ];
 const faq = [
   { q: "كام تكلفة تصميم موقع أو تطبيق؟", a: `الموقع التعريفي بيبدأ من حوالي ${fmt(PROJECT_TYPES.site.price[0])} جنيه، والمتجر من ${fmt(PROJECT_TYPES.store.price[0])}، والتطبيق من ${fmt(PROJECT_TYPES.app.price[0])} جنيه. السعر بيتحدد حسب المميزات، وتقدر تحسبه من الحاسبة في أول الصفحة.` },
@@ -79,43 +80,61 @@ const faq = [
 
   <TechOrbit />
 
-  <section class="section" id="services">
+  <!-- ── البرمجة: شبكة bento ── -->
+  <section class="cosmos" id="services" aria-labelledby="svc-h">
     <div class="container">
-      <div class="section-head">
+      <div class="section-head" data-reveal>
         <p class="eyebrow">البرمجة والتطوير</p>
-        <h2>نبني منتجك الرقمي من الصفر</h2>
+        <h2 id="svc-h">نبني منتجك الرقمي <span class="grad">من الصفر</span></h2>
         <p>{CATEGORIES.dev.blurb}</p>
       </div>
-      <div class="grid grid-4">{featured.map((s) => <ServiceCard service={s} />)}</div>
+      <div class="bento" data-reveal="stagger">
+        {featured.map((s, i) => (
+          <a class={`gcard b${i}`} href={href(servicePath(s.slug))} data-tilt>
+            <span class="orb"><Icon name={s.icon} size={26} /></span>
+            <h3>{s.name}</h3>
+            <p>{s.short}</p>
+            {i === 0 && <ul class="chiplist"><li>Android</li><li>iOS</li><li>لوحة تحكم</li><li>دفع أونلاين</li><li>تتبع لايف</li></ul>}
+            {s.priceFrom && <span class="price-tag">يبدأ من <b>{fmt(s.priceFrom)}</b> جنيه</span>}
+            <span class="more">اعرف أكتر <Icon name="arrow" size={16} /></span>
+            {i === 0 && heroWork && (
+              <img class="b0__phone" src={href(screenSrc(heroWork, heroWork.cover, 360))} srcset={`${href(screenSrc(heroWork, heroWork.cover, 360))} 360w, ${href(screenSrc(heroWork, heroWork.cover, 720))} 720w`} sizes="240px" width="360" height={heroWork.h360} alt="" loading="lazy" decoding="async" />
+            )}
+          </a>
+        ))}
+      </div>
     </div>
   </section>
 
-  <section class="section section--alt" id="work">
+  <!-- ── الأعمال ── -->
+  <section class="cosmos cosmos--violet" id="work" aria-labelledby="work-h">
     <div class="container">
-      <div class="section-head">
+      <div class="section-head" data-reveal>
         <p class="eyebrow">من شغلنا</p>
-        <h2>شوف مستوى التصميم قبل ما تبدأ</h2>
+        <h2 id="work-h">شوف مستوى التصميم <span class="grad">قبل ما تبدأ</span></h2>
         <p>تصاميم مفاهيمية ونماذج تفاعلية عملناها لمطاعم بيتزا ومشويات ومحلات حلويات، بنفس المستوى اللي هنعمل بيه تطبيقك.</p>
       </div>
-      <div class="grid grid-3">{["pizza-app", "grill-restaurant-app", "sweets-app"].map(workBySlug).filter((w) => w !== undefined).map((w) => <WorkCard work={w} />)}</div>
+      <div class="grid grid-3 works" data-reveal="stagger">{["pizza-app", "grill-restaurant-app", "sweets-app"].map(workBySlug).filter((w) => w !== undefined).map((w) => <WorkCard work={w} />)}</div>
       <p class="all"><a class="btn btn--ghost" href={href("/work/")}>كل الأعمال <Icon name="arrow" size={18} /></a></p>
     </div>
   </section>
 
-  <section class="section">
+  <!-- ── باقي التخصصات ── -->
+  <section class="cosmos cosmos--teal" aria-labelledby="more-h">
     <div class="container">
-      <div class="section-head">
+      <div class="section-head" data-reveal>
         <p class="eyebrow">وكمان</p>
-        <h2>كل اللي براندك محتاجه عشان يكبر</h2>
+        <h2 id="more-h">كل اللي براندك محتاجه <span class="grad">عشان يكبر</span></h2>
       </div>
-      <div class="grid grid-3">
+      <div class="grid grid-3" data-reveal="stagger">
         {others.map((c) => (
-          <div class="card cat">
+          <div class="gcard cat" data-tilt>
+            <span class="orb"><Icon name={catIcon[c]} size={24} /></span>
             <h3>{CATEGORIES[c].name}</h3>
             <p>{CATEGORIES[c].blurb}</p>
             <ul>
               {servicesIn(c).map((s) => (
-                <li><a href={href(servicePath(s.slug))}><Icon name={s.icon} size={18} />{s.name}</a></li>
+                <li><a href={href(servicePath(s.slug))}><Icon name={s.icon} size={18} /><span>{s.name}</span><Icon name="arrow" size={16} class="go" /></a></li>
               ))}
             </ul>
           </div>
@@ -125,11 +144,23 @@ const faq = [
     </div>
   </section>
 
-  <section class="section section--alt">
-    <div class="container">
-      <div class="section-head"><p class="eyebrow">ليه عتاد</p><h2>شريك تقني فاهم شغلك، مش منفّذ وخلاص</h2></div>
-      <div class="grid grid-4">
-        {why.map((w) => <div class="card"><span class="icon-badge"><Icon name="check" /></span><h3>{w.t}</h3><p>{w.d}</p></div>)}
+  <!-- ── ليه عتاد ── -->
+  <section class="cosmos" aria-labelledby="why-h">
+    <div class="container why">
+      <div class="why__lead" data-reveal>
+        <p class="eyebrow">ليه عتاد</p>
+        <h2 id="why-h">شريك تقني <span class="grad">فاهم شغلك</span>، مش منفّذ وخلاص</h2>
+        <p>من أول مكالمة لحد ما أول عميل يطلب من تطبيقك، فيه فريق واحد مسؤول عن كل حاجة.</p>
+        <a class="btn btn--primary btn--lg" href={href("/profile/")}>شوف بروفايل عتاد</a>
+      </div>
+      <div class="why__grid" data-reveal="stagger">
+        {why.map((w, i) => (
+          <div class="gcard" data-tilt>
+            <span class="why__n grad">0{i + 1}</span>
+            <h3>{w.t}</h3>
+            <p>{w.d}</p>
+          </div>
+        ))}
       </div>
     </div>
   </section>
@@ -176,10 +207,43 @@ const faq = [
   .offer__msg b { display: block; font-size: 18px; }
   .offer__msg small { color: #b9c6d8; font-size: 14px; }
 
-  .cat ul { list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 4px; }
-  .cat a { display: flex; align-items: center; gap: 10px; text-decoration: none; padding: 8px 10px; border-radius: 8px; font-weight: 500; }
-  .cat a:hover { background: var(--cyan-soft); }
+  /* bento البرمجة */
+  .bento { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: minmax(230px, auto); gap: 18px; }
+  .b0 { grid-column: span 2; grid-row: span 2; overflow: hidden; padding-inline-end: 44%; background: radial-gradient(70% 80% at 0% 100%, rgba(18,194,233,.22), transparent 60%), linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.02)); }
+  .b0 h3 { font-size: clamp(22px, 2.4vw, 28px); }
+  .b0__phone { position: absolute; inset-inline-end: -10px; bottom: -40px; width: 42%; max-width: 250px; rotate: -8deg; filter: drop-shadow(0 30px 50px rgba(0,0,0,.6)); transition: transform .5s cubic-bezier(.2,.7,.2,1); pointer-events: none; }
+  .b0:hover .b0__phone { transform: translateY(-14px) rotate(3deg); }
+  .b1 { grid-column: span 2; }
+  @media (max-width: 960px) { .bento { grid-template-columns: repeat(2, 1fr); } .b0 { grid-column: span 2; grid-row: auto; } .b1 { grid-column: span 2; } }
+  @media (max-width: 600px) { .bento { grid-template-columns: minmax(0, 1fr); } .b0, .b1 { grid-column: auto; } .b0 { padding-inline-end: 26px; padding-bottom: 290px; } .b0__phone { width: 150px; inset-inline-end: 50%; translate: 50% 0; bottom: -90px; } }
+
+  /* الأعمال على خلفية داكنة */
+  .works :global(.wcard) { background: rgba(255,255,255,.04); border-color: rgba(148,197,255,.14); }
+  .works :global(.wcard:hover) { border-color: rgba(18,194,233,.6); box-shadow: 0 30px 70px -30px rgba(18,194,233,.5); }
+  .works :global(.wcard h3) { color: #fff; }
+  .works :global(.wcard__body p) { color: #9fb0c7; }
+  .works :global(.wcard .tags span) { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.12); color: #c9d5e4; }
+  .works :global(.wcard .tags .kind--concept) { background: rgba(18,194,233,.16); color: #7dd3fc; }
+  .works :global(.more) { color: var(--cyan); }
+
+  /* باقي التخصصات */
+  .cat ul { list-style: none; padding: 0; margin: 18px 0 0; display: grid; gap: 6px; }
+  .cat a { display: flex; align-items: center; gap: 10px; text-decoration: none; padding: 11px 12px; border-radius: 12px; font-weight: 500; color: #e6eef7; border: 1px solid transparent; transition: background .2s, border-color .2s, transform .2s; }
+  .cat a span { flex: 1; }
   .cat a :global(svg) { color: var(--cyan); }
+  .cat a :global(.go) { opacity: 0; transform: translateX(6px); transition: opacity .2s, transform .2s; }
+  .cat a:hover { background: rgba(18,194,233,.1); border-color: rgba(18,194,233,.3); }
+  .cat a:hover :global(.go) { opacity: 1; transform: none; }
+
+  /* ليه عتاد */
+  .why { display: grid; grid-template-columns: 1fr 1.35fr; gap: clamp(28px, 4vw, 56px); align-items: center; }
+  .why__lead h2 { font-size: clamp(28px, 3.6vw, 44px); line-height: 1.3; }
+  .why__lead p:not(.eyebrow) { color: #9fb0c7; font-size: 17.5px; margin-bottom: 26px; }
+  .why__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+  .why__n { font: 700 44px/1 var(--font-display); margin-bottom: 14px; display: block; }
+  @media (max-width: 960px) { .why { grid-template-columns: minmax(0, 1fr); } }
+  @media (max-width: 600px) { .why__grid { grid-template-columns: minmax(0, 1fr); } }
+
   .all { margin: 28px 0 0; text-align: center; }
 
   @media (max-width: 960px) { .hero__grid { grid-template-columns: 1fr; gap: 32px; } }
