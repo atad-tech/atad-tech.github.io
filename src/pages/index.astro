@@ -2,8 +2,7 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import Calculator from "@/components/Calculator.astro";
 import Countdown from "@/components/Countdown.astro";
-import WorkCard from "@/components/WorkCard.astro";
-import { screenSrc, workBySlug } from "@/data/work";
+import { KIND_LABEL, screenSrc, workBySlug, workPath } from "@/data/work";
 import { guideBySlug, guidePath } from "@/data/guides";
 import HowYouPay from "@/components/HowYouPay.astro";
 import SpaceBg from "@/components/SpaceBg.astro";
@@ -19,6 +18,8 @@ import { faqPage } from "@/lib/schema";
 
 const featured = SERVICES.filter((s) => s.featured);
 const heroWork = workBySlug("pizza-app");
+// الترتيب: يمين، نص (الأكبر)، شمال
+const showcase = ["grill-restaurant-app", "pizza-app", "sweets-app"].map(workBySlug).filter((w) => w !== undefined);
 const catIcon: Record<CategoryId, "phone" | "megaphone" | "pen" | "server"> = { dev: "phone", marketing: "megaphone", design: "pen", infra: "server" };
 const others = (Object.keys(CATEGORIES) as CategoryId[]).filter((c) => c !== "dev");
 const offerDate = new Date(`${OFFER.endsOn}T12:00:00+02:00`).toLocaleDateString("ar-EG", { day: "numeric", month: "long", year: "numeric", timeZone: "Africa/Cairo" });
@@ -114,7 +115,25 @@ const faq = [
         <h2 id="work-h">شوف مستوى التصميم <span class="grad">قبل ما تبدأ</span></h2>
         <p>تصاميم مفاهيمية ونماذج تفاعلية عملناها لمطاعم بيتزا ومشويات ومحلات حلويات، بنفس المستوى اللي هنعمل بيه تطبيقك.</p>
       </div>
-      <div class="grid grid-3 works" data-reveal="stagger">{["pizza-app", "grill-restaurant-app", "sweets-app"].map(workBySlug).filter((w) => w !== undefined).map((w) => <WorkCard work={w} />)}</div>
+      <div class="stage" data-reveal="stagger">
+        {showcase.map((w, i) => {
+          const c = w.screens.find((x) => x.file === w.cover) ?? w.screens[0]!;
+          return (
+            <a class={`ph3 ph3--${["side", "center", "side2"][i]} tone--${w.tone}`} href={href(workPath(w.slug))}>
+              <span class="ph3__glow" aria-hidden="true"></span>
+              <span class="ph3__float">
+                <img src={href(screenSrc(w, c.file, 360))} srcset={`${href(screenSrc(w, c.file, 360))} 360w, ${href(screenSrc(w, c.file, 720))} 720w`} sizes="(max-width: 600px) 62vw, 260px" width="360" height={w.h360} alt={c.alt} loading="lazy" decoding="async" />
+              </span>
+              <span class="ph3__pad" aria-hidden="true"></span>
+              <span class="ph3__info">
+                <span class="ph3__tags"><span class="k">{KIND_LABEL[w.kind]}</span><span>{w.industry}</span><span>{w.screens.length} شاشات</span></span>
+                <b>{w.title}</b>
+                <span class="more">شوف الشاشات <Icon name="arrow" size={16} /></span>
+              </span>
+            </a>
+          );
+        })}
+      </div>
       <p class="all"><a class="btn btn--ghost" href={href("/work/")}>كل الأعمال <Icon name="arrow" size={18} /></a></p>
     </div>
   </section>
@@ -217,14 +236,35 @@ const faq = [
   @media (max-width: 960px) { .bento { grid-template-columns: repeat(2, 1fr); } .b0 { grid-column: span 2; grid-row: auto; } .b1 { grid-column: span 2; } }
   @media (max-width: 600px) { .bento { grid-template-columns: minmax(0, 1fr); } .b0, .b1 { grid-column: auto; } .b0 { padding-inline-end: 26px; padding-bottom: 290px; } .b0__phone { width: 150px; inset-inline-end: 50%; translate: 50% 0; bottom: -90px; } }
 
-  /* الأعمال على خلفية داكنة */
-  .works :global(.wcard) { background: rgba(255,255,255,.04); border-color: rgba(148,197,255,.14); }
-  .works :global(.wcard:hover) { border-color: rgba(18,194,233,.6); box-shadow: 0 30px 70px -30px rgba(18,194,233,.5); }
-  .works :global(.wcard h3) { color: #fff; }
-  .works :global(.wcard__body p) { color: #9fb0c7; }
-  .works :global(.wcard .tags span) { background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.12); color: #c9d5e4; }
-  .works :global(.wcard .tags .kind--concept) { background: rgba(18,194,233,.16); color: #7dd3fc; }
-  .works :global(.more) { color: var(--cyan); }
+  /* الأعمال: 3 موبايلات طايرة ثلاثية الأبعاد */
+  .stage { display: grid; grid-template-columns: 1fr 1.15fr 1fr; align-items: end; gap: clamp(8px, 2vw, 28px); perspective: 1400px; padding-top: 20px; }
+  .ph3 { position: relative; display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #fff; transform-style: preserve-3d; }
+  .ph3__float { display: block; width: min(100%, 250px); transition: transform .6s cubic-bezier(.2,.7,.2,1); animation: phFloat 7s ease-in-out infinite; }
+  .ph3--center .ph3__float { width: min(100%, 290px); animation-delay: -2.3s; }
+  .ph3--side .ph3__float { transform: rotateY(-22deg) rotateZ(2deg) translateZ(-40px); animation-delay: -1s; }
+  .ph3--side2 .ph3__float { transform: rotateY(22deg) rotateZ(-2deg) translateZ(-40px); animation-delay: -4s; }
+  .ph3 img { width: 100%; display: block; filter: drop-shadow(0 40px 50px rgba(0,0,0,.6)); }
+  .ph3:hover .ph3__float, .ph3:focus-visible .ph3__float { transform: rotateY(0) translateY(-18px) scale(1.04); }
+  .ph3__glow { position: absolute; inset: 8% 10% 30%; border-radius: 40%; filter: blur(50px); opacity: .55; z-index: -1; transition: opacity .4s; }
+  .tone--teal .ph3__glow { background: #14b8c6; } .tone--navy .ph3__glow { background: #2563eb; } .tone--emerald .ph3__glow { background: #10b981; }
+  .tone--red .ph3__glow { background: #ef4444; } .tone--charcoal .ph3__glow { background: #f59e0b; }
+  .ph3:hover .ph3__glow { opacity: .85; }
+  .ph3__pad { width: 70%; height: 18px; margin-top: -6px; border-radius: 50%; background: radial-gradient(closest-side, rgba(18,194,233,.55), transparent); filter: blur(4px); }
+  .ph3__info { display: grid; justify-items: center; gap: 8px; margin-top: 18px; text-align: center; }
+  .ph3__tags { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+  .ph3__tags span { font: 600 12px/1 var(--font-display); padding: 6px 10px; border-radius: 99px; color: #c9d5e4; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); }
+  .ph3__tags .k { color: #7dd3fc; background: rgba(18,194,233,.14); border-color: rgba(18,194,233,.35); }
+  .ph3__info b { font: 700 clamp(17px, 1.6vw, 20px)/1.4 var(--font-display); }
+  .ph3 .more { color: var(--cyan); font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+  @keyframes phFloat { 50% { translate: 0 -14px; } }
+  @media (max-width: 760px) {
+    .stage { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 18px; padding: 10px var(--gutter) 6px; margin-inline: calc(var(--gutter) * -1); scrollbar-width: none; perspective: none; }
+    .stage::-webkit-scrollbar { display: none; }
+    .ph3 { flex: 0 0 66%; scroll-snap-align: center; }
+    .ph3--side .ph3__float, .ph3--side2 .ph3__float { transform: none; }
+    .ph3__float, .ph3--center .ph3__float { width: 100%; }
+  }
+  @media (prefers-reduced-motion: reduce) { .ph3__float { animation: none; } }
 
   /* باقي التخصصات */
   .cat ul { list-style: none; padding: 0; margin: 18px 0 0; display: grid; gap: 6px; }
