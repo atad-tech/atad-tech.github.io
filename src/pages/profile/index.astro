@@ -1,0 +1,306 @@
+---
+/**
+ * بروفايل عتاد: الـ CV بتاع الشركة، صفحة سينمائية بتتقري كأنها رحلة في الفضاء،
+ * ومعاها نسخة PDF (public/atad-profile.pdf) تتبعت للعملاء. كل الأرقام هنا حقيقية.
+ */
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import TechOrbit from "@/components/TechOrbit.astro";
+import CtaBand from "@/components/CtaBand.astro";
+import Icon from "@/components/Icon.astro";
+import { CATEGORIES, SERVICES, servicesIn, type CategoryId } from "@/data/services";
+import { WORK, screenSrc, workPath } from "@/data/work";
+import { CONTACT, SITE, SOCIAL, whatsappLink } from "@/config/site";
+import { PAYMENT_PLAN, PROJECT_TYPES, fmt } from "@/config/pricing";
+import { absolute, href, servicePath } from "@/lib/url";
+import { breadcrumbs, FOUNDER } from "@/lib/schema";
+
+const crumbs = [{ name: "عتاد", path: "/" }, { name: "بروفايل الشركة", path: "/profile/" }];
+const cats = Object.keys(CATEGORIES) as CategoryId[];
+const catIcon: Record<CategoryId, "phone" | "megaphone" | "pen" | "server"> = { dev: "phone", marketing: "megaphone", design: "pen", infra: "server" };
+
+const stats = [
+  { n: SERVICES.length, s: "", t: "خدمة تحت سقف واحد" },
+  { n: cats.length, s: "", t: "تخصصات: برمجة، تسويق، تصميم، بنية تحتية" },
+  { n: WORK.length, s: "", t: "نماذج تطبيقات تفاعلية تقدر تجرّبها" },
+  { n: 100, s: "%", t: "الكود والحسابات والتصميمات باسمك" },
+];
+
+const values = [
+  { t: "الجودة قبل السرعة", d: "مش بنسلّم حاجة إحنا مش فخورين بيها. كل شاشة وكل سطر كود بيتراجع." },
+  { t: "الوضوح", d: "سعر مكتوب بند بند، مدة واضحة، ومراحل تسليم متفق عليها من الأول." },
+  { t: "ملكيتك ليك", d: "الدومين والحسابات والكود والتصميمات باسمك من أول يوم." },
+  { t: "شراكة مش صفقة", d: "بنفضل معاك بعد الإطلاق، لأن نجاحك هو اللي بيجيبلنا عملاء جداد." },
+];
+
+const process = [
+  { t: "الاكتشاف", d: "مكالمة نفهم فيها شغلك وعملاءك والمشكلة اللي عايز تحلها.", out: "تصور مبدئي مجاني" },
+  { t: "الخطة وعرض السعر", d: "نحدد المميزات والمدة، ونفكّك السعر بند بند.", out: "عرض سعر مكتوب" },
+  { t: "تصميم التجربة", d: "نرسم رحلة العميل ونصمم كل شاشة على هوية براندك.", out: "تصميمات توافق عليها قبل البرمجة" },
+  { t: "البرمجة", d: "نبني التطبيق ولوحة التحكم والسيرفر بأحدث التقنيات.", out: "نسخة تجريبية على موبايلك" },
+  { t: "الاختبار والإطلاق", d: "نختبر كل سيناريو، ونرفع على المتاجر أو نطلق الموقع.", out: "منتج شغال باسمك" },
+  { t: "النمو", d: "دعم فني، تطوير مستمر، وحملات إعلانية تجيبلك أول عملاء.", out: "شهر دعم مجاني" },
+];
+
+const promises = [
+  { t: "سعر نهائي مكتوب", d: "مفيش مفاجآت ولا \"حاجة صغيرة كده\" تتحسب بعدين." },
+  { t: `دفع على ${PAYMENT_PLAN.length} مراحل`, d: PAYMENT_PLAN.map((p) => `${p.pct}% ${p.when}`).join("، ") + "." },
+  { t: "ملكية كاملة", d: "الكود والحسابات على المتاجر والدومين والتصميمات، كلهم باسمك." },
+  { t: "أمان من الأساس", d: "تشفير، صلاحيات، ونسخ احتياطي. وموقعنا نفسه بيعدّي على أكتر من 380 اختبار آلي قبل أي تحديث." },
+  { t: "سرعة على الموبايل", d: "كل شاشة بتتصمم وتتختبر على الموبايل الأول، لأن عملاءك عليه." },
+  { t: "جاهز يبيع", d: "التتبع والتحليلات متجهزين للإعلانات من يوم الإطلاق." },
+];
+
+const desc = `بروفايل عتاد ATAD للبرمجيات: مين إحنا، خدماتنا الـ${SERVICES.length}، طريقة شغلنا في 6 مراحل، التقنيات اللي بنستخدمها، ونماذج من تصميماتنا. حمّل البروفايل PDF.`;
+---
+<BaseLayout title="بروفايل الشركة | عتاد ATAD للبرمجيات" description={desc} path="/profile/" schema={[breadcrumbs(crumbs)]}>
+  <!-- ── 1. البداية: نفق نجوم ── -->
+  <section class="intro dark">
+    <canvas data-warp aria-hidden="true"></canvas>
+    <div class="glow" aria-hidden="true"></div>
+    <div class="container intro__in">
+      <nav aria-label="مسار التصفح" class="crumbs"><a href={href("/")}>عتاد</a> ‹ <span aria-current="page">بروفايل الشركة</span></nav>
+      <p class="code" dir="ltr" data-decode>ATAD · SOFTWARE ENGINEERING · COMPANY PROFILE</p>
+      <h1>إحنا مش بنكتب كود وبس.<span>إحنا بنجهّز عتاد مشروعك.</span></h1>
+      <p class="lead">عتاد ATAD شركة برمجيات وتسويق رقمي. بنصمم ونبرمج تطبيقات ومواقع وأنظمة على مقاس كل عميل، وبنوصّلها لعملائه، في مصر والسعودية والخليج.</p>
+      <div class="btn-row">
+        <a class="btn btn--primary btn--lg" href={href("/atad-profile.pdf")} download="ATAD-Company-Profile.pdf">حمّل البروفايل PDF</a>
+        <a class="btn btn--ghost btn--lg" href={whatsappLink("أهلًا عتاد، شفت البروفايل وعايز أبدأ مشروع.")} rel="noopener noreferrer" data-wa="profile-hero"><Icon name="whatsapp" size={20} />ابدأ مشروعك</a>
+      </div>
+      <p class="scroll" aria-hidden="true"><span></span>اعمل سكرول وادخل جوه</p>
+    </div>
+  </section>
+
+  <!-- ── 2. الأرقام ── -->
+  <section class="stats" aria-label="عتاد بالأرقام">
+    <div class="container">
+      <ul data-reveal="stagger">
+        {stats.map((s) => <li><b data-count={s.n} data-suffix={s.s}>{s.n}{s.s}</b><span>{s.t}</span></li>)}
+      </ul>
+    </div>
+  </section>
+
+  <!-- ── 3. مين إحنا ── -->
+  <section class="section">
+    <div class="container about">
+      <div data-reveal>
+        <p class="eyebrow">01 · مين إحنا</p>
+        <h2>ليه اسمنا "عتاد"؟</h2>
+        <p>العتاد هو اللي بتجهزه قبل ما تدخل أي معركة. وكل صاحب شغل النهارده داخل معركة يومية على انتباه العميل، في سوق مليان منافسين.</p>
+        <p>دورنا نجهزك بالعتاد الصح: تطبيق أو موقع بتصميم خاص يعبّر عن براندك، سيستم ينظم شغلك، وتسويق يوصّلك للناس اللي محتاجاك فعلًا.</p>
+      </div>
+      <div class="mv" data-reveal="stagger">
+        <div class="card glass" data-tilt><p class="eyebrow">المهمة</p><p class="big">إن أي براند، مهما كان حجمه، يقدر يبان بمستوى عالمي أونلاين.</p></div>
+        <div class="card glass" data-tilt><p class="eyebrow">الرؤية</p><p class="big">نبقى أول اسم يفكر فيه صاحب البيزنس العربي لما يقرر يبني منتج رقمي.</p></div>
+      </div>
+    </div>
+    <div class="container">
+      <div class="grid grid-4 values" data-reveal="stagger">
+        {values.map((v, i) => <div class="card" data-tilt><span class="num">0{i + 1}</span><h3>{v.t}</h3><p>{v.d}</p></div>)}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 4. التخصصات ── -->
+  <section class="caps dark" aria-labelledby="caps-h">
+    <div class="container">
+      <div class="section-head" data-reveal><p class="eyebrow">02 · بنعمل إيه</p><h2 id="caps-h">4 تخصصات. فريق واحد. مسؤول عن كل حاجة.</h2></div>
+      <div class="grid grid-4" data-reveal="stagger">
+        {cats.map((c) => (
+          <div class="cap" data-tilt>
+            <span class="cap__icon"><Icon name={catIcon[c]} size={26} /></span>
+            <h3>{CATEGORIES[c].name}</h3>
+            <ul>{servicesIn(c).map((s) => <li><a href={href(servicePath(s.slug))}>{s.name}</a></li>)}</ul>
+          </div>
+        ))}
+      </div>
+      <p class="prices" data-reveal>
+        التطبيقات من <b>{fmt(PROJECT_TYPES.app.price[0])}</b> · المواقع من <b>{fmt(PROJECT_TYPES.site.price[0])}</b> · المتاجر من <b>{fmt(PROJECT_TYPES.store.price[0])}</b> · الأنظمة من <b>{fmt(PROJECT_TYPES.system.price[0])}</b> جنيه
+      </p>
+    </div>
+  </section>
+
+  <!-- ── 5. طريقة الشغل ── -->
+  <section class="section" aria-labelledby="proc-h">
+    <div class="container">
+      <div class="section-head" data-reveal><p class="eyebrow">03 · إزاي بنشتغل</p><h2 id="proc-h">من فكرة في دماغك لمنتج في إيد عملاءك</h2></div>
+      <ol class="timeline" data-reveal="stagger">
+        {process.map((p, i) => (
+          <li>
+            <span class="dot">{String(i + 1).padStart(2, "0")}</span>
+            <div class="card">
+              <h3>{p.t}</h3>
+              <p>{p.d}</p>
+              <span class="out"><Icon name="check" size={16} />{p.out}</span>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- ── 6. التقنيات ── -->
+  <TechOrbit />
+
+  <!-- ── 7. الأعمال ── -->
+  <section class="section showcase" aria-labelledby="work-h">
+    <div class="container">
+      <div class="section-head" data-reveal>
+        <p class="eyebrow">04 · من شغلنا</p>
+        <h2 id="work-h">جرّب مستوى التصميم بعينك</h2>
+        <p>تصاميم مفاهيمية ونماذج تفاعلية عملناها لقطاعات مختلفة، والأسماء والشعارات فيها افتراضية.</p>
+      </div>
+      <div class="phones" data-reveal="stagger">
+        {WORK.map((w) => {
+          const c = w.screens.find((s) => s.file === w.cover) ?? w.screens[0]!;
+          return (
+            <a class="phone" href={href(workPath(w.slug))} data-tilt>
+              <img src={href(screenSrc(w, c.file, 360))} srcset={`${href(screenSrc(w, c.file, 360))} 360w, ${href(screenSrc(w, c.file, 720))} 720w`} sizes="220px" width="360" height={w.h360} alt={c.alt} loading="lazy" decoding="async" />
+              <span>{w.title}</span>
+            </a>
+          );
+        })}
+      </div>
+      <p class="all"><a class="btn btn--ghost" href={href("/work/")}>كل الأعمال <Icon name="arrow" size={18} /></a></p>
+    </div>
+  </section>
+
+  <!-- ── 8. وعودنا ── -->
+  <section class="section section--alt" aria-labelledby="prom-h">
+    <div class="container">
+      <div class="section-head" data-reveal><p class="eyebrow">05 · وعودنا ليك</p><h2 id="prom-h">اللي بنلتزم بيه في كل مشروع</h2></div>
+      <div class="grid grid-3" data-reveal="stagger">
+        {promises.map((p) => <div class="card" data-tilt><span class="icon-badge"><Icon name="check" /></span><h3>{p.t}</h3><p>{p.d}</p></div>)}
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 9. المؤسس والتواصل ── -->
+  <section class="section">
+    <div class="container contact">
+      <div class="founder card" data-reveal>
+        <span class="avatar" aria-hidden="true">م</span>
+        <div>
+          <p class="eyebrow">المؤسس</p>
+          <h2>{FOUNDER.name}</h2>
+          <p class="role">{FOUNDER.jobTitle}</p>
+          <blockquote>"كل مشروع بنستلمه بنعامله كأنه مشروعنا. عشان كده بنكتب السعر قبل ما نبدأ، وبنسيب الكود باسمك، وبنفضل معاك بعد الإطلاق."</blockquote>
+        </div>
+      </div>
+      <div class="card reach" data-reveal>
+        <p class="eyebrow">تواصل معانا</p>
+        <ul>
+          <li><Icon name="whatsapp" size={20} /><a href={whatsappLink("أهلًا عتاد، شفت البروفايل.")} rel="noopener noreferrer" data-wa="profile-contact" dir="ltr">{CONTACT.phoneDisplay}</a></li>
+          <li><Icon name="globe" size={20} /><a href={href("/")} dir="ltr">{absolute("/").replace("https://", "").replace(/\/$/, "")}</a></li>
+          <li><Icon name="facebook" size={20} /><a href={SOCIAL.facebook} target="_blank" rel="noopener noreferrer">فيسبوك</a></li>
+          <li><Icon name="instagram" size={20} /><a href={SOCIAL.instagram} target="_blank" rel="noopener noreferrer" dir="ltr">@atad.tech</a></li>
+        </ul>
+        <a class="btn btn--primary" href={href("/atad-profile.pdf")} download="ATAD-Company-Profile.pdf">حمّل البروفايل PDF</a>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand title={`${SITE.name}: جاهزين نبدأ مشروعك`} />
+</BaseLayout>
+
+<script>
+  import "@/scripts/warp";
+</script>
+
+<style>
+  /* 1. البداية */
+  .intro { position: relative; overflow: hidden; min-height: min(92vh, 860px); display: flex; align-items: center; background: #030914; }
+  .intro canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .glow { position: absolute; width: 900px; height: 900px; left: 50%; top: 50%; translate: -50% -50%; border-radius: 50%; pointer-events: none;
+    background: radial-gradient(circle, rgba(18,194,233,.18), rgba(124,58,237,.12) 35%, transparent 65%); animation: breathe 7s ease-in-out infinite; }
+  .intro__in { position: relative; z-index: 1; padding-block: 60px; text-align: center; }
+  .crumbs { font-size: 14px; color: #8fa1b8; margin-bottom: 26px; }
+  .crumbs a { color: #c9d5e4; }
+  .code { font: 600 13px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: .28em; color: var(--cyan); margin-bottom: 22px; }
+  .intro h1 { font-size: clamp(34px, 6vw, 76px); line-height: 1.2; max-width: 16ch; margin: 0 auto 22px; text-shadow: 0 0 50px rgba(18,194,233,.3); }
+  .intro h1 span { display: block; background: linear-gradient(90deg, #12c2e9, #7dd3fc, #a78bfa, #f0abfc, #12c2e9); background-size: 250% auto; -webkit-background-clip: text; background-clip: text; color: transparent; animation: shine 8s linear infinite; }
+  .intro .lead { max-width: 62ch; margin: 0 auto 30px; font-size: clamp(16.5px, 1.6vw, 19.5px); }
+  .intro .btn-row { justify-content: center; }
+  .scroll { margin: 48px 0 0; color: #8fa1b8; font-size: 13.5px; display: grid; justify-items: center; gap: 10px; }
+  .scroll span { width: 24px; height: 38px; border: 2px solid rgba(255,255,255,.35); border-radius: 14px; position: relative; }
+  .scroll span::after { content: ""; position: absolute; left: 50%; top: 7px; width: 4px; height: 8px; margin-left: -2px; border-radius: 2px; background: var(--cyan); animation: wheel 1.8s ease-in-out infinite; }
+
+  /* 2. الأرقام */
+  .stats { background: linear-gradient(180deg, #030914, var(--navy-900)); color: #fff; padding-block: 34px; border-block: 1px solid rgba(18,194,233,.18); }
+  .stats ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; text-align: center; }
+  .stats b { display: block; font: 700 clamp(36px, 5vw, 58px)/1 var(--font-display); background: linear-gradient(180deg, #fff, #7dd3fc); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .stats span { color: #b9c6d8; font-size: 14.5px; }
+
+  /* 3. مين إحنا */
+  .about { display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px; align-items: center; margin-bottom: 40px; }
+  .about p { color: var(--muted); font-size: 17px; }
+  .mv { display: grid; gap: 16px; }
+  .glass { border-top: 3px solid var(--cyan); padding: 24px 26px; }
+  .big { font: 600 clamp(18px, 2vw, 22px)/1.6 var(--font-display) !important; color: var(--ink) !important; margin: 0; }
+  .values .num { font: 700 30px/1 var(--font-display); color: var(--accent-ink); opacity: .55; display: block; margin-bottom: 10px; }
+  .values p { color: var(--muted); margin: 0; }
+
+  /* 4. التخصصات */
+  .caps { position: relative; padding-block: clamp(60px, 8vw, 100px); background: radial-gradient(100% 80% at 50% 0%, #10305c, #061224 70%); }
+  .cap { background: rgba(255,255,255,.04); border: 1px solid rgba(18,194,233,.25); border-radius: var(--radius-l); padding: 24px; backdrop-filter: blur(4px); }
+  .cap:hover { border-color: rgba(18,194,233,.7); box-shadow: 0 0 40px rgba(18,194,233,.18); }
+  .cap__icon { display: inline-grid; place-items: center; width: 52px; height: 52px; border-radius: 14px; color: #06121f; background: linear-gradient(135deg, #12c2e9, #a78bfa); margin-bottom: 14px; box-shadow: 0 0 24px rgba(18,194,233,.4); }
+  .cap h3 { color: #fff; font-size: 19px; }
+  .cap ul { list-style: none; padding: 0; margin: 10px 0 0; display: grid; gap: 6px; }
+  .cap a { color: #c9d5e4; text-decoration: none; font-size: 15px; }
+  .cap a:hover { color: var(--cyan); }
+  .prices { text-align: center; margin: 34px 0 0; color: #b9c6d8; font-size: 16px; }
+  .prices b { color: var(--cyan); font-family: var(--font-display); }
+
+  /* 5. التايملاين */
+  .timeline { list-style: none; padding: 0; margin: 0; position: relative; display: grid; gap: 22px; }
+  .timeline::before { content: ""; position: absolute; inset-inline-start: 27px; top: 10px; bottom: 10px; width: 2px; background: linear-gradient(180deg, var(--cyan), #a78bfa, transparent); }
+  .timeline li { display: grid; grid-template-columns: 56px 1fr; gap: 18px; align-items: start; }
+  .dot { position: relative; z-index: 1; width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; font: 700 17px/1 var(--font-display); color: #06121f; background: linear-gradient(135deg, #12c2e9, #7dd3fc); box-shadow: 0 0 0 6px var(--bg), 0 0 24px rgba(18,194,233,.5); }
+  .timeline h3 { font-size: 19px; margin-bottom: 4px; }
+  .timeline p { color: var(--muted); margin: 0 0 10px; }
+  .out { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 600; color: var(--accent-ink); background: var(--cyan-soft); padding: 5px 12px; border-radius: 99px; }
+
+  /* 7. الأعمال: موبايلات طايرة */
+  .phones { display: flex; justify-content: center; gap: clamp(12px, 2vw, 26px); flex-wrap: wrap; perspective: 1200px; }
+  .phone { width: clamp(140px, 15vw, 196px); text-decoration: none; text-align: center; border-radius: 28px; }
+  .phone img { width: 100%; filter: drop-shadow(0 24px 40px rgba(10,27,51,.35)); transition: transform .4s; }
+  .phone:nth-child(odd) img { animation: hover 6s ease-in-out infinite; }
+  .phone:nth-child(even) img { animation: hover 6s ease-in-out infinite reverse; }
+  .phone span { display: block; margin-top: 12px; font-weight: 600; font-size: 15px; }
+  .all { text-align: center; margin: 30px 0 0; }
+
+  /* 9. المؤسس والتواصل */
+  .contact { display: grid; grid-template-columns: 1.5fr 1fr; gap: 24px; align-items: stretch; }
+  .founder { display: flex; gap: 22px; align-items: flex-start; padding: 30px; }
+  .avatar { flex: none; width: 84px; height: 84px; border-radius: 50%; display: grid; place-items: center; font: 700 36px/1 var(--font-display); color: #fff; background: linear-gradient(135deg, #0b6fae, #7c3aed); box-shadow: 0 0 30px rgba(18,194,233,.35); }
+  .founder h2 { font-size: 26px; margin-bottom: 2px; }
+  .role { color: var(--muted); margin: 0 0 14px; }
+  blockquote { margin: 0; padding-inline-start: 16px; border-inline-start: 3px solid var(--cyan); font-size: 17px; line-height: 1.8; color: var(--ink); }
+  .reach { padding: 28px; display: flex; flex-direction: column; gap: 14px; }
+  .reach ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; }
+  .reach li { display: flex; align-items: center; gap: 10px; }
+  .reach li :global(svg) { color: var(--accent-ink); }
+  .reach a:not(.btn) { color: var(--ink); text-decoration: none; font-weight: 500; }
+  .reach .btn { margin-top: auto; }
+
+  @keyframes shine { to { background-position: 250% center; } }
+  @keyframes breathe { 50% { scale: 1.15; opacity: .8; } }
+  @keyframes wheel { 0% { transform: translateY(0); opacity: 1; } 70% { transform: translateY(12px); opacity: 0; } 100% { opacity: 0; } }
+  @keyframes hover { 50% { transform: translateY(-14px) rotate(-1.5deg); } }
+
+  @media (max-width: 960px) {
+    .about, .contact { grid-template-columns: minmax(0, 1fr); }
+    .stats ul { grid-template-columns: repeat(2, 1fr); row-gap: 28px; }
+  }
+  @media (max-width: 520px) { .founder { flex-direction: column; } .phone { width: calc(50% - 10px); } }
+  @media (prefers-reduced-motion: reduce) { .glow, .intro h1 span, .scroll span::after, .phone img { animation: none; } }
+
+  /* نسخة الطباعة / PDF */
+  @media print {
+    .intro { min-height: auto; }
+    .scroll, .crumbs { display: none; }
+    .card, .cap, .timeline li, .phone, .stats li { break-inside: avoid; }
+    section { break-inside: auto; }
+    .phone img { animation: none !important; }
+  }
+</style>

@@ -26,6 +26,7 @@ const pages: Entry[] = [
     priority: "0.7",
     images: w.screens.map((s) => ({ loc: absolute(screenSrc(w, s.file, 720)), title: `${w.title} – ${s.label}` })),
   })),
+  { path: "/profile/", priority: "0.8" },
   { path: "/about/", priority: "0.6" },
   { path: "/contact/", priority: "0.6" },
   { path: "/privacy/", priority: "0.2" },

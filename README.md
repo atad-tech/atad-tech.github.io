@@ -5,7 +5,7 @@
 
 **https://atad-tech.github.io**
 
-موقع ثابت مبني بـ [Astro](https://astro.build) وTypeScript (strictest). بينزل على GitHub Pages أوتوماتيك، بس بعد ما يعدّي على 382 اختبار وفحص أمني.
+موقع ثابت مبني بـ [Astro](https://astro.build) وTypeScript (strictest). بينزل على GitHub Pages أوتوماتيك، بس بعد ما يعدّي على 392 اختبار وفحص أمني.
 
 - 📐 [هيكل الموقع بالرسومات](docs/ARCHITECTURE.md)
 - 🔒 [نموذج الأمان والتهديدات](docs/SECURITY-MODEL.md)
@@ -32,6 +32,7 @@ npm test           # كل الاختبارات (بعد build)
 | محتوى الخدمات (صفحة لكل خدمة بتتبني أوتوماتيك) | `src/data/services.ts` |
 | أعمالنا (مشاريع وتصاميم مفاهيمية، الصور في `public/work/`) | `src/data/work.ts` |
 | الأدلة والمقالات (الأسعار فيها بتتحسب من الحاسبة) | `src/data/guides.ts` |
+| بروفايل الشركة PDF (بعد أي تعديل في صفحة /profile/) | `python3 scripts/make-profile-pdf.py` وهي شغالة على `astro preview --port 4399` |
 | تاريخ آخر تعديل في الـ sitemap | `CONTENT_UPDATED` في `src/pages/sitemap.xml.ts` |
 | الألوان والخطوط والمسافات | `src/styles/global.css` |
 | سياسة الأمان (CSP) | `astro.config.ts` |

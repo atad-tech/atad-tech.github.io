@@ -10,7 +10,7 @@ flowchart LR
         Code["الكود<br/>atad-tech/atad-tech.github.io"]
     end
     subgraph CI["GitHub Actions"]
-        Test["فحص + بناء + 382 اختبار"]
+        Test["فحص + بناء + 392 اختبار"]
         Scan["CodeQL + npm audit<br/>+ Dependabot"]
     end
     subgraph Host["GitHub Pages (HTTPS)"]

@@ -135,3 +135,5 @@ function start(canvas: HTMLCanvasElement): void {
 }
 
 document.querySelectorAll<HTMLCanvasElement>("canvas[data-space]").forEach(start);
+
+export {};

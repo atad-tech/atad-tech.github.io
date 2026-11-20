@@ -11,6 +11,7 @@ export const PAGES: string[] = [
   "/contact/",
   "/privacy/",
   "/terms/",
+  "/profile/",
   "/work/",
   ...SERVICES.map((s) => `/${s.slug}/`),
   ...WORK.map((w) => `/work/${w.slug}/`),
